@@ -594,57 +594,94 @@ body {
 .cs-trigger {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 8px;
-  padding: 7px 11px;
+  gap: 6px;
+  /* iOS 26 liquid glass pill */
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(60px) saturate(250%) brightness(110%);
+  -webkit-backdrop-filter: blur(60px) saturate(250%) brightness(110%);
+  border: 0.5px solid rgba(255,255,255,0.82);
+  border-radius: 10px;
+  padding: 7px 12px;
   font-size: 12.5px;
   font-weight: 500;
   color: var(--text-2);
   cursor: pointer;
   font-family: inherit;
-  box-shadow: var(--glass-shadow);
-  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.15s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:
+    0 2px 12px rgba(0,0,0,0.07),
+    0 1px 0 rgba(255,255,255,0.95) inset,
+    0 -0.5px 0 rgba(0,0,0,0.05) inset;
+  transition: all 0.2s cubic-bezier(0.34,1.12,0.64,1);
   white-space: nowrap;
   user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+.cs-trigger::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.4), rgba(255,255,255,0));
+  border-radius: 10px 10px 0 0;
+  pointer-events: none;
 }
 .cs-trigger:hover {
-  background: rgba(255,255,255,0.82);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 1px 0 rgba(255,255,255,0.9) inset;
+  background: rgba(255,255,255,0.75);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.09),
+    0 1px 0 rgba(255,255,255,1) inset,
+    0 -0.5px 0 rgba(0,0,0,0.04) inset;
   transform: translateY(-1px);
 }
-.cs-trigger:active { transform: scale(0.97); }
+.cs-trigger:active { transform: scale(0.97) translateY(0); }
 
 .cs-chevron {
-  width: 12px;
-  height: 12px;
+  width: 11px; height: 11px;
   flex-shrink: 0;
-  opacity: 0.5;
-  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s ease;
+  opacity: 0.45;
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s ease;
 }
-.cs-wrap.open .cs-chevron { transform: rotate(180deg); opacity: 0.8; }
+.cs-wrap.open .cs-chevron { transform: rotate(180deg); opacity: 0.7; }
 
 .cs-panel {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 7px);
   right: 0;
-  min-width: 170px;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(40px) saturate(220%) brightness(103%);
-  -webkit-backdrop-filter: blur(40px) saturate(220%) brightness(103%);
-  border: 1px solid rgba(255,255,255,0.78);
-  border-radius: 13px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.13), 0 1px 0 rgba(255,255,255,0.95) inset, 0 0 0 0.5px rgba(0,0,0,0.06);
+  min-width: 175px;
+  /* iOS 26 frosted glass — proper */
+  background: rgba(245,245,250,0.78);
+  backdrop-filter: blur(80px) saturate(280%) brightness(108%);
+  -webkit-backdrop-filter: blur(80px) saturate(280%) brightness(108%);
+  border: 0.5px solid rgba(255,255,255,0.85);
+  border-radius: 16px;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.14),
+    0 8px 24px rgba(0,0,0,0.07),
+    0 0 0 0.5px rgba(0,0,0,0.05),
+    0 1px 0 rgba(255,255,255,1) inset;
   overflow: hidden;
   z-index: 40;
   transform-origin: top right;
-  transform: scale(0.9) translateY(-8px);
+  transform: scale(0.88) translateY(-10px);
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.24s cubic-bezier(0.34,1.56,0.64,1), opacity 0.18s ease;
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease;
+}
+/* Iridescent top sheen — iOS 26 signature */
+.cs-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0.95) 30%,
+    rgba(210,230,255,0.8) 60%,
+    rgba(255,255,255,0.6) 80%,
+    rgba(255,255,255,0));
+  pointer-events: none;
+  z-index: 1;
 }
 .cs-wrap.open .cs-panel {
   transform: scale(1) translateY(0);
@@ -655,31 +692,39 @@ body {
 .cs-option {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 9px 14px;
+  gap: 0;
+  padding: 10px 16px;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-1);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: background 0.14s ease;
   user-select: none;
+  letter-spacing: -0.01em;
 }
-.cs-option + .cs-option { border-top: 1px solid rgba(0,0,0,0.045); }
-.cs-option:hover { background: rgba(0,122,255,0.07); }
-.cs-option.active { color: var(--accent); background: rgba(0,122,255,0.06); }
-.cs-option .cs-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.cs-option + .cs-option {
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+}
+.cs-option:hover {
+  background: rgba(0,122,255,0.08);
+}
+.cs-option:active {
+  background: rgba(0,122,255,0.14);
+}
+.cs-option.active {
+  color: var(--accent);
+  font-weight: 600;
+  background: rgba(0,122,255,0.07);
 }
 .cs-check {
   margin-left: auto;
-  width: 14px; height: 14px;
+  width: 13px; height: 13px;
   opacity: 0;
   color: var(--accent);
-  transition: opacity 0.15s ease;
+  transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  transform: scale(0.6);
 }
-.cs-option.active .cs-check { opacity: 1; }
+.cs-option.active .cs-check { opacity: 1; transform: scale(1); }
 
 .add-btn {
   background: var(--accent);
@@ -1087,23 +1132,23 @@ td { padding: 10px 14px; vertical-align: middle; }
           </button>
           <div class="cs-panel">
             <div class="cs-option active" data-val="" onclick="pickStatus('')">
-              <span class="cs-dot" style="background:var(--text-3)"></span>All statuses
+              All statuses
               <svg class="cs-check" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 6,11 12,3"/></svg>
             </div>
             <div class="cs-option" data-val="live" onclick="pickStatus('live')">
-              <span class="cs-dot" style="background:var(--live)"></span>Live
+              Live
               <svg class="cs-check" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 6,11 12,3"/></svg>
             </div>
             <div class="cs-option" data-val="partial" onclick="pickStatus('partial')">
-              <span class="cs-dot" style="background:var(--partial)"></span>Partial
+              Partial
               <svg class="cs-check" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 6,11 12,3"/></svg>
             </div>
             <div class="cs-option" data-val="pending" onclick="pickStatus('pending')">
-              <span class="cs-dot" style="background:var(--pending)"></span>Pending
+              Pending
               <svg class="cs-check" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 6,11 12,3"/></svg>
             </div>
             <div class="cs-option" data-val="blocked" onclick="pickStatus('blocked')">
-              <span class="cs-dot" style="background:var(--blocked)"></span>Blocked
+              Blocked
               <svg class="cs-check" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 6,11 12,3"/></svg>
             </div>
           </div>
