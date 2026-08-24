@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TRAP Intel — Build Tracker</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0C0C0E;
+    --surface: #141417;
+    --surface-2: #1C1C20;
+    --border: rgba(255,255,255,0.07);
+    --text-1: #F0F0F2;
+    --text-2: #8E8E9A;
+    --text-3: #5A5A66;
+    --live: #22C55E;
+    --live-bg: rgba(34,197,94,0.1);
+    --partial: #F59E0B;
+    --partial-bg: rgba(245,158,11,0.1);
+    --pending: #6B7280;
+    --pending-bg: rgba(107,114,128,0.1);
+    --blocked: #EF4444;
+    --blocked-bg: rgba(239,68,68,0.1);
+    --accent: #4F9CF9;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-2);
+  }
+
+  /* Overall progress */
+  .progress-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-2);
+    white-space: nowrap;
+    min-width: 120px;
+  }
+  .progress-label strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    background: var(--surface-2);
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: var(--live);
+    width: 76%;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-counts {
+    font-size: 12px;
+    color: var(--text-2);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .progress-counts span { color: var(--text-1); font-weight: 600; }
+
+  /* Section */
+  .section { margin-bottom: 36px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .section-count {
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 20px;
+    background: var(--surface-2);
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 0 12px 8px;
+    text-align: left;
+  }
+  thead th:last-child { text-align: right; }
+  tbody tr {
+    border-top: 1px solid var(--border);
+  }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  td {
+    padding: 11px 12px;
+    vertical-align: middle;
+  }
+  .feature-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-1);
+  }
+  .feature-note {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+  .date-col {
+    font-size: 12px;
+    color: var(--text-3);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Status badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .badge-live {
+    color: var(--live);
+    background: var(--live-bg);
+    border: 1px solid rgba(34,197,94,0.2);
+  }
+  .badge-partial {
+    color: var(--partial);
+    background: var(--partial-bg);
+    border: 1px solid rgba(245,158,11,0.2);
+  }
+  .badge-pending {
+    color: var(--pending);
+    background: var(--pending-bg);
+    border: 1px solid rgba(107,114,128,0.18);
+  }
+  .badge-blocked {
+    color: var(--blocked);
+    background: var(--blocked-bg);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  /* Last updated */
+  .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  @media (max-width: 600px) {
+    .progress-card { flex-wrap: wrap; }
+    .date-col { display: none; }
+    .page { padding: 28px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="eyebrow">TRAP Intel Platform</div>
+    <div class="title">Build Progress Tracker</div>
+    <div class="subtitle">Live status of all features — updated on completion</div>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-label">
+      <strong>76%</strong>
+      Overall complete
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill"></div>
+    </div>
+    <div class="progress-counts">
+      <span>16</span> live &nbsp;·&nbsp; <span>1</span> partial &nbsp;·&nbsp; <span>4</span> pending
+    </div>
+  </div>
+
+  <!-- Intelligence Modules -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Intelligence Modules</span>
+      <span class="section-count">8 features</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="feature-name">IP Intelligence</div>
+            <div class="feature-note">IPQS fraud score, LeakOSINT breach data, dark web hits</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 6</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Wallet Tracer</div>
+            <div class="feature-note">BTC + ETH live; BSC &amp; Chain Abuse pending API keys</div>
+          </td>
+          <td><span class="badge badge-partial">PARTIAL</span></td>
+          <td class="date-col">Aug 9</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Username Intelligence</div>
+            <div class="feature-note">Platform lookup, dark web forum posts, stealer logs</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 20</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Email Intelligence</div>
+            <div class="feature-note">Breach lookup, social profiles, reputation scoring</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 20</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Website Intelligence</div>
+            <div class="feature-note">urlscan, WHOIS, CDX, Wayback, Archive, credentials tab</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 9</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Onion Intelligence</div>
+            <div class="feature-note">23-module Tor scanner, screenshots, Tor circuit animation</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 18</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Dark Handle Intelligence</div>
+            <div class="feature-note">Global ES search, forum presence &amp; PII, threat actor pivot</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 24</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Threat Actor Profiles</div>
+            <div class="feature-note">3-tier resolution, actor database, forum presence card</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 15</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Platform Features -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Platform Features</span>
+      <span class="section-count">8 features</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="feature-name">Dashboard &amp; Stats</div>
+            <div class="feature-note">Live metrics, activity feed, summary cards</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 3</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Compromised Credentials</div>
+            <div class="feature-note">Stealer log search, breach database lookup</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 3</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Government Watch</div>
+            <div class="feature-note">Regulatory monitoring, govt-linked entity tracking</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 3</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Surface Web Search</div>
+            <div class="feature-note">SearxNG, 4 pages parallel, 80–93 results per query</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 17</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Investigation Graph</div>
+            <div class="feature-note">ReactFlow canvas, 14 section types, edge delete, pagination</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 22</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Discovery → Entity Palette</div>
+            <div class="feature-note">8-vector routing, scan queue, multi-URL sequential scanning</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 19</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Seizure Watchdog</div>
+            <div class="feature-note">FBI / Europol / NCA detection, red/amber banner, graph node</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 19</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Investigation Inspector</div>
+            <div class="feature-note">Card layout, [N] format, expand + hit table, 335k ES pagination</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 22</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Admin Panel</span>
+      <span class="section-count">2 features</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="feature-name">Authentication &amp; User Management</div>
+            <div class="feature-note">JWT auth, Brevo email, admin credentials</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 3</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Progress Tracker (this page)</div>
+            <div class="feature-note">Feature status, build timeline</div>
+          </td>
+          <td><span class="badge badge-live">LIVE</span></td>
+          <td class="date-col">Aug 25</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pending -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Pending / Blocked</span>
+      <span class="section-count">4 items</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="feature-name">BSC Wallet Chain</div>
+            <div class="feature-note">Waiting on BscScan API key</div>
+          </td>
+          <td><span class="badge badge-pending">PENDING</span></td>
+          <td class="date-col">—</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Chain Abuse Integration</div>
+            <div class="feature-note">Waiting on Breadcrumbs credit top-up</div>
+          </td>
+          <td><span class="badge badge-pending">PENDING</span></td>
+          <td class="date-col">—</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Credentials Tab (LeakSights)</div>
+            <div class="feature-note">API key expired Aug 15 — renewal needed</div>
+          </td>
+          <td><span class="badge badge-blocked">BLOCKED</span></td>
+          <td class="date-col">Exp. Aug 15</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="feature-name">Per-hit Profile Enrichment</div>
+            <div class="feature-note">Auto-enrich each result with full profile data</div>
+          </td>
+          <td><span class="badge badge-pending">PENDING</span></td>
+          <td class="date-col">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">TRAP Intel Platform · Internal build tracker</span>
+    <span class="footer-text">Last updated: Aug 25, 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
