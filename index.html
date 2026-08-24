@@ -5,514 +5,1038 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TRAP Intel — Build Tracker</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #0C0C0E;
-    --surface: #141417;
-    --surface-2: #1C1C20;
-    --border: rgba(255,255,255,0.07);
-    --text-1: #F0F0F2;
-    --text-2: #8E8E9A;
-    --text-3: #5A5A66;
-    --live: #22C55E;
-    --live-bg: rgba(34,197,94,0.1);
-    --partial: #F59E0B;
-    --partial-bg: rgba(245,158,11,0.1);
-    --pending: #6B7280;
-    --pending-bg: rgba(107,114,128,0.1);
-    --blocked: #EF4444;
-    --blocked-bg: rgba(239,68,68,0.1);
-    --accent: #4F9CF9;
-  }
+:root {
+  --bg: #0A0A0C;
+  --surface: #111116;
+  --surface-2: #18181E;
+  --surface-3: #1E1E25;
+  --border: rgba(255,255,255,0.06);
+  --border-2: rgba(255,255,255,0.10);
+  --text-1: #EEEEF2;
+  --text-2: #8A8A98;
+  --text-3: #52525E;
+  --live: #22C55E;
+  --live-bg: rgba(34,197,94,0.09);
+  --live-border: rgba(34,197,94,0.22);
+  --partial: #F59E0B;
+  --partial-bg: rgba(245,158,11,0.09);
+  --partial-border: rgba(245,158,11,0.22);
+  --pending: #6B7280;
+  --pending-bg: rgba(107,114,128,0.09);
+  --pending-border: rgba(107,114,128,0.22);
+  --blocked: #EF4444;
+  --blocked-bg: rgba(239,68,68,0.09);
+  --blocked-border: rgba(239,68,68,0.22);
+  --accent: #4F9CF9;
+  --accent-bg: rgba(79,156,249,0.1);
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text-1);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+body {
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
 
-  .page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
+/* ─── LOGIN ───────────────────────────────────────────────── */
 
-  /* Header */
-  .header {
-    margin-bottom: 40px;
-  }
-  .eyebrow {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 10px;
-  }
-  .title {
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text-1);
-    margin-bottom: 6px;
-  }
-  .subtitle {
-    font-size: 13px;
-    color: var(--text-2);
-  }
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+}
 
-  /* Overall progress */
-  .progress-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 36px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-  .progress-label {
-    font-size: 12px;
-    color: var(--text-2);
-    white-space: nowrap;
-    min-width: 120px;
-  }
-  .progress-label strong {
-    display: block;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text-1);
-    letter-spacing: -0.02em;
-    font-variant-numeric: tabular-nums;
-  }
-  .progress-bar-wrap {
-    flex: 1;
-    background: var(--surface-2);
-    border-radius: 6px;
-    height: 8px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    border-radius: 6px;
-    background: var(--live);
-    width: 76%;
-    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
-  }
-  .progress-counts {
-    font-size: 12px;
-    color: var(--text-2);
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
-  }
-  .progress-counts span { color: var(--text-1); font-weight: 600; }
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 16px;
+  padding: 40px 36px;
+}
 
-  /* Section */
-  .section { margin-bottom: 36px; }
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-title {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-2);
-  }
-  .section-count {
-    font-size: 11px;
-    padding: 1px 7px;
-    border-radius: 20px;
-    background: var(--surface-2);
-    color: var(--text-3);
-    font-variant-numeric: tabular-nums;
-  }
+.login-brand {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 20px;
+}
 
-  /* Table */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  thead th {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    padding: 0 12px 8px;
-    text-align: left;
-  }
-  thead th:last-child { text-align: right; }
-  tbody tr {
-    border-top: 1px solid var(--border);
-  }
-  tbody tr:hover { background: rgba(255,255,255,0.02); }
-  td {
-    padding: 11px 12px;
-    vertical-align: middle;
-  }
-  .feature-name {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-1);
-  }
-  .feature-note {
-    font-size: 12px;
-    color: var(--text-3);
-    margin-top: 2px;
-  }
-  .date-col {
-    font-size: 12px;
-    color: var(--text-3);
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
+.login-heading {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  margin-bottom: 6px;
+}
 
-  /* Status badge */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 3px 9px;
-    border-radius: 6px;
-    white-space: nowrap;
-  }
-  .badge-live {
-    color: var(--live);
-    background: var(--live-bg);
-    border: 1px solid rgba(34,197,94,0.2);
-  }
-  .badge-partial {
-    color: var(--partial);
-    background: var(--partial-bg);
-    border: 1px solid rgba(245,158,11,0.2);
-  }
-  .badge-pending {
-    color: var(--pending);
-    background: var(--pending-bg);
-    border: 1px solid rgba(107,114,128,0.18);
-  }
-  .badge-blocked {
-    color: var(--blocked);
-    background: var(--blocked-bg);
-    border: 1px solid rgba(239,68,68,0.2);
-  }
+.login-sub {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 28px;
+}
 
-  /* Last updated */
-  .footer {
-    margin-top: 48px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .footer-text {
-    font-size: 12px;
-    color: var(--text-3);
-  }
+.code-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: var(--text-1);
+  letter-spacing: 0.06em;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  margin-bottom: 12px;
+  font-family: inherit;
+}
+.code-input:focus {
+  border-color: rgba(79,156,249,0.5);
+  box-shadow: 0 0 0 3px rgba(79,156,249,0.12);
+}
+.code-input.input-err { border-color: var(--blocked); box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
 
-  @media (max-width: 600px) {
-    .progress-card { flex-wrap: wrap; }
-    .date-col { display: none; }
-    .page { padding: 28px 16px 60px; }
-  }
+.login-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  font-family: inherit;
+}
+.login-btn:hover { opacity: 0.88; }
+.login-btn:active { opacity: 0.78; }
+
+.login-err {
+  font-size: 12px;
+  color: var(--blocked);
+  margin-top: 10px;
+  min-height: 16px;
+  text-align: center;
+}
+
+.login-hint {
+  font-size: 11px;
+  color: var(--text-3);
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── APP SHELL ────────────────────────────────────────────── */
+
+#app { display: none; }
+
+/* Header */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 52px;
+  background: rgba(10,10,12,0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-left { display: flex; align-items: center; gap: 10px; }
+
+.header-logo {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 5px;
+  padding: 3px 7px;
+}
+
+.header-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.session-badge {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 8px;
+}
+.session-badge.session-warn { color: var(--partial); border-color: var(--partial-border); }
+
+.logout-btn {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 0.13s, border-color 0.13s;
+  font-family: inherit;
+}
+.logout-btn:hover { color: var(--text-1); border-color: var(--border-2); }
+
+/* Stats bar */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px 14px 0;
+  margin-right: 20px;
+  border-right: 1px solid var(--border);
+}
+.stat-box:first-child { padding-left: 0; }
+
+.stat-num {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.stat-num.c-live { color: var(--live); }
+.stat-num.c-partial { color: var(--partial); }
+.stat-num.c-pending { color: var(--pending); }
+.stat-num.c-blocked { color: var(--blocked); }
+
+.stat-lbl { font-size: 11px; color: var(--text-3); font-weight: 500; }
+
+.stat-progress {
+  flex: 1;
+  padding: 14px 0 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.progress-pct {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+.progress-sub { font-size: 11px; color: var(--text-3); }
+
+.progress-track {
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--live);
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.search-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-1);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-input:focus {
+  border-color: rgba(79,156,249,0.4);
+  box-shadow: 0 0 0 3px rgba(79,156,249,0.08);
+}
+.search-input::placeholder { color: var(--text-3); }
+
+.filter-select {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text-2);
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.filter-select:focus { border-color: rgba(79,156,249,0.4); }
+
+.add-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: opacity 0.13s;
+}
+.add-btn:hover { opacity: 0.88; }
+
+/* Sections */
+.sections { padding: 20px 28px 60px; }
+
+.section { margin-bottom: 32px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.section-count {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; }
+
+thead th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 6px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+.th-actions, .th-date { text-align: right; }
+
+tbody tr {
+  border-top: 1px solid var(--border);
+  transition: background 0.1s;
+}
+tbody tr:hover { background: rgba(255,255,255,0.018); }
+
+td { padding: 10px 12px; vertical-align: middle; }
+
+.task-name { font-size: 14px; font-weight: 500; color: var(--text-1); }
+.task-note { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+.td-status { white-space: nowrap; }
+.td-priority { white-space: nowrap; }
+.td-date {
+  font-size: 12px;
+  color: var(--text-3);
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.td-actions { text-align: right; white-space: nowrap; }
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.badge.clickable { cursor: pointer; user-select: none; transition: opacity 0.1s; }
+.badge.clickable:hover { opacity: 0.78; }
+.badge.clickable:active { opacity: 0.6; }
+
+.badge-live { color: var(--live); background: var(--live-bg); border: 1px solid var(--live-border); }
+.badge-partial { color: var(--partial); background: var(--partial-bg); border: 1px solid var(--partial-border); }
+.badge-pending { color: var(--pending); background: var(--pending-bg); border: 1px solid var(--pending-border); }
+.badge-blocked { color: var(--blocked); background: var(--blocked-bg); border: 1px solid var(--blocked-border); }
+
+/* Priority */
+.pri-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.pri-high { color: #F87171; background: rgba(248,113,113,0.1); }
+.pri-med { color: #FB923C; background: rgba(251,146,60,0.1); }
+.pri-low { color: var(--text-3); background: var(--surface-2); }
+
+/* Action buttons */
+.action-btn {
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--border-2);
+  border-radius: 5px;
+  padding: 3px 8px;
+  cursor: pointer;
+  background: transparent;
+  font-family: inherit;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  margin-left: 4px;
+}
+.edit-btn { color: var(--text-3); }
+.edit-btn:hover { color: var(--accent); border-color: rgba(79,156,249,0.35); background: var(--accent-bg); }
+.del-btn { color: var(--text-3); }
+.del-btn:hover { color: var(--blocked); border-color: var(--blocked-border); background: var(--blocked-bg); }
+
+/* Empty state */
+.empty {
+  padding: 40px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* ─── MODAL ─────────────────────────────────────────────────── */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.modal-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+.modal-close {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--text-3);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.12s;
+  font-family: inherit;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--text-1); }
+
+.form-field { margin-bottom: 14px; }
+.form-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 5px;
+}
+.optional { font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--text-1);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-field input:focus,
+.form-field select:focus {
+  border-color: rgba(79,156,249,0.45);
+  box-shadow: 0 0 0 3px rgba(79,156,249,0.09);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: 7px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.12s;
+}
+.btn-cancel:hover { color: var(--text-1); }
+
+.btn-save {
+  background: var(--accent);
+  border: none;
+  border-radius: 7px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.13s;
+}
+.btn-save:hover { opacity: 0.88; }
+
+@media (max-width: 600px) {
+  .stats-bar { flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
+  .stat-progress { width: 100%; padding-left: 0; border-top: 1px solid var(--border); padding-top: 12px; }
+  .stat-box { border-right: none; padding-right: 0; margin-right: 8px; }
+  .toolbar { flex-wrap: wrap; padding: 12px 16px; }
+  .search-input { min-width: 100%; }
+  .sections { padding: 16px 16px 40px; }
+  .app-header { padding: 0 16px; }
+  .form-row { grid-template-columns: 1fr; }
+  .th-priority, .th-date, .td-priority, .td-date { display: none; }
+}
 </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="header">
-    <div class="eyebrow">TRAP Intel Platform</div>
-    <div class="title">Build Progress Tracker</div>
-    <div class="subtitle">Live status of all features — updated on completion</div>
+<!-- ─── LOGIN SCREEN ─── -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">TRAP Intelligence Platform</div>
+    <h1 class="login-heading">Build Tracker</h1>
+    <p class="login-sub">This page is access-restricted. Enter your code to view progress.</p>
+    <input
+      type="password"
+      id="code-input"
+      class="code-input"
+      placeholder="Access code"
+      autocomplete="off"
+      maxlength="64"
+    />
+    <button class="login-btn" onclick="doLogin()">Continue</button>
+    <p id="login-err" class="login-err"></p>
+    <p class="login-hint">Session expires after 24 hours</p>
   </div>
-
-  <div class="progress-card">
-    <div class="progress-label">
-      <strong>76%</strong>
-      Overall complete
-    </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-fill"></div>
-    </div>
-    <div class="progress-counts">
-      <span>16</span> live &nbsp;·&nbsp; <span>1</span> partial &nbsp;·&nbsp; <span>4</span> pending
-    </div>
-  </div>
-
-  <!-- Intelligence Modules -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Intelligence Modules</span>
-      <span class="section-count">8 features</span>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th>Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div class="feature-name">IP Intelligence</div>
-            <div class="feature-note">IPQS fraud score, LeakOSINT breach data, dark web hits</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 6</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Wallet Tracer</div>
-            <div class="feature-note">BTC + ETH live; BSC &amp; Chain Abuse pending API keys</div>
-          </td>
-          <td><span class="badge badge-partial">PARTIAL</span></td>
-          <td class="date-col">Aug 9</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Username Intelligence</div>
-            <div class="feature-note">Platform lookup, dark web forum posts, stealer logs</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 20</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Email Intelligence</div>
-            <div class="feature-note">Breach lookup, social profiles, reputation scoring</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 20</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Website Intelligence</div>
-            <div class="feature-note">urlscan, WHOIS, CDX, Wayback, Archive, credentials tab</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 9</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Onion Intelligence</div>
-            <div class="feature-note">23-module Tor scanner, screenshots, Tor circuit animation</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 18</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Dark Handle Intelligence</div>
-            <div class="feature-note">Global ES search, forum presence &amp; PII, threat actor pivot</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 24</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Threat Actor Profiles</div>
-            <div class="feature-note">3-tier resolution, actor database, forum presence card</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 15</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Platform Features -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Platform Features</span>
-      <span class="section-count">8 features</span>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th>Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div class="feature-name">Dashboard &amp; Stats</div>
-            <div class="feature-note">Live metrics, activity feed, summary cards</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 3</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Compromised Credentials</div>
-            <div class="feature-note">Stealer log search, breach database lookup</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 3</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Government Watch</div>
-            <div class="feature-note">Regulatory monitoring, govt-linked entity tracking</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 3</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Surface Web Search</div>
-            <div class="feature-note">SearxNG, 4 pages parallel, 80–93 results per query</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 17</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Investigation Graph</div>
-            <div class="feature-note">ReactFlow canvas, 14 section types, edge delete, pagination</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 22</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Discovery → Entity Palette</div>
-            <div class="feature-note">8-vector routing, scan queue, multi-URL sequential scanning</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 19</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Seizure Watchdog</div>
-            <div class="feature-note">FBI / Europol / NCA detection, red/amber banner, graph node</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 19</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Investigation Inspector</div>
-            <div class="feature-note">Card layout, [N] format, expand + hit table, 335k ES pagination</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 22</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Admin Panel -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Admin Panel</span>
-      <span class="section-count">2 features</span>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th>Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div class="feature-name">Authentication &amp; User Management</div>
-            <div class="feature-note">JWT auth, Brevo email, admin credentials</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 3</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Progress Tracker (this page)</div>
-            <div class="feature-note">Feature status, build timeline</div>
-          </td>
-          <td><span class="badge badge-live">LIVE</span></td>
-          <td class="date-col">Aug 25</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Pending -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Pending / Blocked</span>
-      <span class="section-count">4 items</span>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th>Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div class="feature-name">BSC Wallet Chain</div>
-            <div class="feature-note">Waiting on BscScan API key</div>
-          </td>
-          <td><span class="badge badge-pending">PENDING</span></td>
-          <td class="date-col">—</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Chain Abuse Integration</div>
-            <div class="feature-note">Waiting on Breadcrumbs credit top-up</div>
-          </td>
-          <td><span class="badge badge-pending">PENDING</span></td>
-          <td class="date-col">—</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Credentials Tab (LeakSights)</div>
-            <div class="feature-note">API key expired Aug 15 — renewal needed</div>
-          </td>
-          <td><span class="badge badge-blocked">BLOCKED</span></td>
-          <td class="date-col">Exp. Aug 15</td>
-        </tr>
-        <tr>
-          <td>
-            <div class="feature-name">Per-hit Profile Enrichment</div>
-            <div class="feature-note">Auto-enrich each result with full profile data</div>
-          </td>
-          <td><span class="badge badge-pending">PENDING</span></td>
-          <td class="date-col">—</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="footer">
-    <span class="footer-text">TRAP Intel Platform · Internal build tracker</span>
-    <span class="footer-text">Last updated: Aug 25, 2026</span>
-  </div>
-
 </div>
+
+<!-- ─── APP ─── -->
+<div id="app">
+
+  <header class="app-header">
+    <div class="header-left">
+      <span class="header-logo">TRAP</span>
+      <span class="header-title">Build Tracker</span>
+    </div>
+    <div class="header-right">
+      <span id="session-timer" class="session-badge"></span>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-box">
+      <div>
+        <div class="stat-num c-live" id="stat-live">0</div>
+        <div class="stat-lbl">Live</div>
+      </div>
+    </div>
+    <div class="stat-box">
+      <div>
+        <div class="stat-num c-partial" id="stat-partial">0</div>
+        <div class="stat-lbl">Partial</div>
+      </div>
+    </div>
+    <div class="stat-box">
+      <div>
+        <div class="stat-num c-pending" id="stat-pending">0</div>
+        <div class="stat-lbl">Pending</div>
+      </div>
+    </div>
+    <div class="stat-box">
+      <div>
+        <div class="stat-num c-blocked" id="stat-blocked">0</div>
+        <div class="stat-lbl">Blocked</div>
+      </div>
+    </div>
+    <div class="stat-progress">
+      <div class="progress-meta">
+        <span class="progress-pct" id="pct-text">0%</span>
+        <span class="progress-sub" id="pct-sub">features live</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input
+      type="text"
+      class="search-input"
+      id="search-input"
+      placeholder="Search features..."
+      oninput="renderSections()"
+    />
+    <select class="filter-select" id="filter-cat" onchange="renderSections()">
+      <option value="">All categories</option>
+      <option value="intel">Intelligence</option>
+      <option value="platform">Platform</option>
+      <option value="admin">Admin Panel</option>
+      <option value="roadmap">Roadmap</option>
+    </select>
+    <select class="filter-select" id="filter-status" onchange="renderSections()">
+      <option value="">All statuses</option>
+      <option value="live">Live</option>
+      <option value="partial">Partial</option>
+      <option value="pending">Pending</option>
+      <option value="blocked">Blocked</option>
+    </select>
+    <button class="add-btn" onclick="openModal()">+ Add Feature</button>
+  </div>
+
+  <div class="sections" id="sections-container"></div>
+</div>
+
+<!-- ─── ADD / EDIT MODAL ─── -->
+<div id="modal-overlay" class="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title-text">Add Feature</h2>
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    </div>
+
+    <div class="form-field">
+      <label>Feature name</label>
+      <input type="text" id="f-name" placeholder="e.g. IP Intelligence" />
+    </div>
+
+    <div class="form-field">
+      <label>Notes <span class="optional">optional</span></label>
+      <input type="text" id="f-note" placeholder="Short description or blocker info" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label>Category</label>
+        <select id="f-cat">
+          <option value="intel">Intelligence Module</option>
+          <option value="platform">Platform Feature</option>
+          <option value="admin">Admin Panel</option>
+          <option value="roadmap">Roadmap / Pending</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Status</label>
+        <select id="f-status">
+          <option value="live">Live</option>
+          <option value="partial">Partial</option>
+          <option value="pending">Pending</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label>Priority</label>
+        <select id="f-priority">
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Date <span class="optional">optional</span></label>
+        <input type="text" id="f-date" placeholder="e.g. Aug 25" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="modal-save-btn" onclick="saveTask()">Add Feature</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────
+const ACCESS_CODE = 'TRAP2026';
+const SESSION_MS  = 24 * 60 * 60 * 1000;
+
+// ─── SEED DATA ────────────────────────────────────────────
+const SEED = [
+  {id:'1',  name:'IP Intelligence',              note:'IPQS fraud score, LeakOSINT breach data, dark web hits',          cat:'intel',    status:'live',    priority:'high',   date:'Aug 6'},
+  {id:'2',  name:'Wallet Tracer',                note:'BTC + ETH live; BSC & Chain Abuse pending API keys',               cat:'intel',    status:'partial', priority:'high',   date:'Aug 9'},
+  {id:'3',  name:'Username Intelligence',        note:'Platform lookup, dark web forum posts, stealer logs',              cat:'intel',    status:'live',    priority:'high',   date:'Aug 20'},
+  {id:'4',  name:'Email Intelligence',           note:'Breach lookup, social profiles, reputation scoring',               cat:'intel',    status:'live',    priority:'high',   date:'Aug 20'},
+  {id:'5',  name:'Website Intelligence',         note:'urlscan, WHOIS, CDX, Wayback, Archive, credentials tab',          cat:'intel',    status:'live',    priority:'medium', date:'Aug 9'},
+  {id:'6',  name:'Onion Intelligence',           note:'23-module Tor scanner, screenshots, circuit animation',            cat:'intel',    status:'live',    priority:'high',   date:'Aug 18'},
+  {id:'7',  name:'Dark Handle Intelligence',     note:'Global ES search, forum presence & PII, threat actor pivot',      cat:'intel',    status:'live',    priority:'medium', date:'Aug 24'},
+  {id:'8',  name:'Threat Actor Profiles',        note:'3-tier resolution, actor database, forum presence card',           cat:'intel',    status:'live',    priority:'medium', date:'Aug 15'},
+  {id:'9',  name:'Dashboard & Stats',            note:'Live metrics, activity feed, summary cards',                       cat:'platform', status:'live',    priority:'medium', date:'Aug 3'},
+  {id:'10', name:'Compromised Credentials',      note:'Stealer log search, breach database lookup',                       cat:'platform', status:'live',    priority:'high',   date:'Aug 3'},
+  {id:'11', name:'Government Watch',             note:'Regulatory monitoring, govt-linked entity tracking',               cat:'platform', status:'live',    priority:'medium', date:'Aug 3'},
+  {id:'12', name:'Surface Web Search',           note:'SearxNG, 4 pages parallel, 80–93 results per query',              cat:'platform', status:'live',    priority:'medium', date:'Aug 17'},
+  {id:'13', name:'Investigation Graph',          note:'ReactFlow canvas, 14 section types, edge delete, pagination',     cat:'platform', status:'live',    priority:'high',   date:'Aug 22'},
+  {id:'14', name:'Discovery / Entity Palette',   note:'8-vector routing, scan queue, multi-URL sequential scanning',     cat:'platform', status:'live',    priority:'high',   date:'Aug 19'},
+  {id:'15', name:'Seizure Watchdog',             note:'FBI / Europol / NCA detection, red/amber banner, graph node',     cat:'platform', status:'live',    priority:'medium', date:'Aug 19'},
+  {id:'16', name:'Investigation Inspector',      note:'Card layout, expand + hit table, 335k ES live pagination',        cat:'platform', status:'live',    priority:'high',   date:'Aug 22'},
+  {id:'17', name:'Authentication & Users',       note:'JWT auth, Brevo email, role-based admin access',                  cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
+  {id:'18', name:'Progress Tracker',             note:'Feature status board, access code gate, 24hr session',            cat:'admin',    status:'live',    priority:'low',    date:'Aug 25'},
+  {id:'19', name:'BSC Wallet Chain',             note:'Waiting on BscScan API key',                                       cat:'roadmap',  status:'pending', priority:'medium', date:''},
+  {id:'20', name:'Chain Abuse Integration',      note:'Waiting on Breadcrumbs credit top-up',                            cat:'roadmap',  status:'pending', priority:'low',    date:''},
+  {id:'21', name:'Credentials Tab (LeakSights)', note:'API key expired Aug 15 — renewal needed',                         cat:'roadmap',  status:'blocked', priority:'high',   date:''},
+  {id:'22', name:'Per-hit Profile Enrichment',   note:'Auto-enrich each result with full profile data',                  cat:'roadmap',  status:'pending', priority:'low',    date:''},
+];
+
+const SECTIONS = [
+  {key:'intel',    label:'Intelligence Modules'},
+  {key:'platform', label:'Platform Features'},
+  {key:'admin',    label:'Admin Panel'},
+  {key:'roadmap',  label:'Roadmap / Pending'},
+];
+
+const STATUS_LBL   = {live:'LIVE', partial:'PARTIAL', pending:'PENDING', blocked:'BLOCKED'};
+const STATUS_CLS   = {live:'badge-live', partial:'badge-partial', pending:'badge-pending', blocked:'badge-blocked'};
+const STATUS_CYCLE = {live:'partial', partial:'pending', pending:'blocked', blocked:'live'};
+const PRI_LBL      = {high:'HIGH', medium:'MED', low:'LOW'};
+const PRI_CLS      = {high:'pri-high', medium:'pri-med', low:'pri-low'};
+
+// ─── AUTH ─────────────────────────────────────────────────
+function checkAuth() {
+  try {
+    const s = JSON.parse(localStorage.getItem('trap_session') || '{}');
+    return s.expiry && Date.now() < s.expiry;
+  } catch { return false; }
+}
+
+function doLogin() {
+  const val = (document.getElementById('code-input').value || '').trim();
+  if (val === ACCESS_CODE) {
+    localStorage.setItem('trap_session', JSON.stringify({expiry: Date.now() + SESSION_MS}));
+    showApp();
+  } else {
+    const el = document.getElementById('code-input');
+    const err = document.getElementById('login-err');
+    el.classList.add('input-err');
+    err.textContent = 'Incorrect access code. Try again.';
+    setTimeout(() => { el.classList.remove('input-err'); err.textContent = ''; }, 2500);
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('trap_session');
+  clearInterval(timerRef);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('code-input').value = '';
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initApp();
+}
+
+// ─── SESSION TIMER ────────────────────────────────────────
+let timerRef = null;
+
+function updateTimer() {
+  try {
+    const {expiry} = JSON.parse(localStorage.getItem('trap_session') || '{}');
+    const rem = expiry - Date.now();
+    if (rem <= 0) { doLogout(); return; }
+    const h = Math.floor(rem / 3600000);
+    const m = Math.floor((rem % 3600000) / 60000);
+    const el = document.getElementById('session-timer');
+    if (!el) return;
+    el.textContent = `${h}h ${String(m).padStart(2,'0')}m left`;
+    el.className = 'session-badge' + (rem < 3600000 ? ' session-warn' : '');
+  } catch {}
+}
+
+// ─── TASKS ────────────────────────────────────────────────
+function getTasks() {
+  try {
+    const raw = localStorage.getItem('trap_tasks');
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return SEED.map(t => ({...t}));
+}
+
+function putTasks(tasks) {
+  localStorage.setItem('trap_tasks', JSON.stringify(tasks));
+}
+
+function cycleStatus(id) {
+  const tasks = getTasks();
+  const t = tasks.find(x => x.id === id);
+  if (t) { t.status = STATUS_CYCLE[t.status] || 'live'; putTasks(tasks); renderSections(); updateStats(); }
+}
+
+function deleteTask(id) {
+  putTasks(getTasks().filter(t => t.id !== id));
+  renderSections();
+  updateStats();
+}
+
+// ─── MODAL ────────────────────────────────────────────────
+let editId = null;
+
+function openModal(id) {
+  editId = id || null;
+  const t = id ? getTasks().find(x => x.id === id) : null;
+  document.getElementById('modal-title-text').textContent  = t ? 'Edit Feature' : 'Add Feature';
+  document.getElementById('modal-save-btn').textContent    = t ? 'Save Changes' : 'Add Feature';
+  document.getElementById('f-name').value     = t ? t.name     : '';
+  document.getElementById('f-note').value     = t ? t.note     : '';
+  document.getElementById('f-cat').value      = t ? t.cat      : 'intel';
+  document.getElementById('f-status').value   = t ? t.status   : 'pending';
+  document.getElementById('f-priority').value = t ? t.priority : 'medium';
+  document.getElementById('f-date').value     = t ? t.date     : '';
+  document.getElementById('modal-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('f-name').focus(), 40);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  editId = null;
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function saveTask() {
+  const name = (document.getElementById('f-name').value || '').trim();
+  if (!name) { document.getElementById('f-name').focus(); return; }
+
+  const tasks = getTasks();
+  const data = {
+    name,
+    note:     (document.getElementById('f-note').value || '').trim(),
+    cat:      document.getElementById('f-cat').value,
+    status:   document.getElementById('f-status').value,
+    priority: document.getElementById('f-priority').value,
+    date:     (document.getElementById('f-date').value || '').trim(),
+  };
+
+  if (editId) {
+    const t = tasks.find(x => x.id === editId);
+    if (t) Object.assign(t, data);
+  } else {
+    tasks.push({id: Date.now().toString(), ...data});
+  }
+
+  putTasks(tasks);
+  closeModal();
+  renderSections();
+  updateStats();
+}
+
+// ─── RENDER ───────────────────────────────────────────────
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function getFiltered() {
+  const q   = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const cat = document.getElementById('filter-cat')?.value || '';
+  const st  = document.getElementById('filter-status')?.value || '';
+  return getTasks().filter(t => {
+    if (cat && t.cat !== cat) return false;
+    if (st  && t.status !== st) return false;
+    if (q && !t.name.toLowerCase().includes(q) && !(t.note||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function renderSections() {
+  const container = document.getElementById('sections-container');
+  if (!container) return;
+  const tasks = getFiltered();
+
+  const html = SECTIONS.map(sec => {
+    const items = tasks.filter(t => t.cat === sec.key);
+    if (!items.length) return '';
+
+    const rows = items.map(t => `
+      <tr>
+        <td class="td-name">
+          <div class="task-name">${esc(t.name)}</div>
+          ${t.note ? `<div class="task-note">${esc(t.note)}</div>` : ''}
+        </td>
+        <td class="td-status">
+          <span class="badge ${STATUS_CLS[t.status]} clickable"
+                onclick="cycleStatus('${t.id}')"
+                title="Click to cycle status">${STATUS_LBL[t.status]}</span>
+        </td>
+        <td class="td-priority">
+          <span class="pri-badge ${PRI_CLS[t.priority]}">${PRI_LBL[t.priority]}</span>
+        </td>
+        <td class="td-date">${t.date ? esc(t.date) : '—'}</td>
+        <td class="td-actions">
+          <button class="action-btn edit-btn" onclick="openModal('${t.id}')">Edit</button>
+          <button class="action-btn del-btn"  onclick="confirmDel('${t.id}')">Del</button>
+        </td>
+      </tr>`).join('');
+
+    return `
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">${esc(sec.label)}</span>
+          <span class="section-count">${items.length}</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="th-name">Feature</th>
+                <th class="th-status">Status</th>
+                <th class="th-priority">Priority</th>
+                <th class="th-date">Date</th>
+                <th class="th-actions"></th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }).join('');
+
+  container.innerHTML = html || '<div class="empty">No features match the current filter.</div>';
+}
+
+function updateStats() {
+  const tasks = getTasks();
+  const counts = {live:0, partial:0, pending:0, blocked:0};
+  tasks.forEach(t => { counts[t.status] = (counts[t.status]||0) + 1; });
+  const total = tasks.length;
+  const pct = total ? Math.round((counts.live / total) * 100) : 0;
+
+  document.getElementById('stat-live').textContent    = counts.live;
+  document.getElementById('stat-partial').textContent = counts.partial;
+  document.getElementById('stat-pending').textContent = counts.pending;
+  document.getElementById('stat-blocked').textContent = counts.blocked;
+  document.getElementById('pct-text').textContent     = pct + '%';
+  document.getElementById('pct-sub').textContent      = `${counts.live} of ${total} features live`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function confirmDel(id) {
+  if (window.confirm('Remove this feature from the tracker?')) deleteTask(id);
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+function initApp() {
+  if (!localStorage.getItem('trap_tasks')) putTasks(SEED.map(t => ({...t})));
+  renderSections();
+  updateStats();
+  updateTimer();
+  clearInterval(timerRef);
+  timerRef = setInterval(updateTimer, 30000);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('code-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+  if (checkAuth()) showApp();
+});
+</script>
 </body>
 </html>
