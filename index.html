@@ -4,78 +4,107 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TRAP Intel — Build Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0A0A0C;
-  --surface: #111116;
-  --surface-2: #18181E;
-  --surface-3: #1E1E25;
-  --border: rgba(255,255,255,0.06);
-  --border-2: rgba(255,255,255,0.10);
-  --text-1: #EEEEF2;
-  --text-2: #8A8A98;
-  --text-3: #52525E;
-  --live: #22C55E;
-  --live-bg: rgba(34,197,94,0.09);
-  --live-border: rgba(34,197,94,0.22);
-  --partial: #F59E0B;
-  --partial-bg: rgba(245,158,11,0.09);
-  --partial-border: rgba(245,158,11,0.22);
-  --pending: #6B7280;
-  --pending-bg: rgba(107,114,128,0.09);
-  --pending-border: rgba(107,114,128,0.22);
-  --blocked: #EF4444;
-  --blocked-bg: rgba(239,68,68,0.09);
-  --blocked-border: rgba(239,68,68,0.22);
-  --accent: #4F9CF9;
-  --accent-bg: rgba(79,156,249,0.1);
+  --bg:        #F2F2F7;
+  --surface:   #FFFFFF;
+  --surface-2: #F2F2F7;
+  --surface-3: #E5E5EA;
+  --border:    rgba(0,0,0,0.08);
+  --border-2:  rgba(0,0,0,0.13);
+  --text-1:    #1C1C1E;
+  --text-2:    #6E6E73;
+  --text-3:    #AEAEB2;
+  --accent:    #007AFF;
+  --accent-d:  #0062CC;
+  --live:      #34C759;
+  --live-bg:   rgba(52,199,89,0.1);
+  --live-b:    rgba(52,199,89,0.25);
+  --partial:   #FF9F0A;
+  --partial-bg:rgba(255,159,10,0.1);
+  --partial-b: rgba(255,159,10,0.25);
+  --pending:   #8E8E93;
+  --pending-bg:rgba(142,142,147,0.1);
+  --pending-b: rgba(142,142,147,0.22);
+  --blocked:   #FF3B30;
+  --blocked-bg:rgba(255,59,48,0.1);
+  --blocked-b: rgba(255,59,48,0.25);
+  --dot-r:     #FF5F57;
+  --dot-y:     #FFBD2E;
+  --dot-g:     #28C840;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.07);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
+  --radius:    12px;
 }
 
 body {
   background: var(--bg);
   color: var(--text-1);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Helvetica Neue', sans-serif;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
-/* ─── LOGIN ───────────────────────────────────────────────── */
+/* ── SCROLLBAR ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.24); }
 
+/* ── LOGIN ─────────────────────────────────────────── */
 .login-wrap {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--bg);
 }
 
 .login-card {
   width: 100%;
   max-width: 380px;
   background: var(--surface);
-  border: 1px solid var(--border-2);
   border-radius: 16px;
-  padding: 40px 36px;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
 }
 
-.login-brand {
+.login-chrome {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 14px;
+  background: #F6F6F8;
+  border-bottom: 1px solid var(--border);
+}
+
+.mac-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.mac-dot.r { background: var(--dot-r); }
+.mac-dot.y { background: var(--dot-y); }
+.mac-dot.g { background: var(--dot-g); }
+
+.login-body { padding: 32px 32px 28px; }
+
+.login-eyebrow {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-3);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .login-heading {
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--text-1);
   margin-bottom: 6px;
 }
@@ -83,49 +112,54 @@ body {
 .login-sub {
   font-size: 13px;
   color: var(--text-2);
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .code-input {
   width: 100%;
-  background: var(--surface-2);
   border: 1px solid var(--border-2);
   border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 15px;
+  padding: 10px 12px;
+  font-size: 14px;
   color: var(--text-1);
-  letter-spacing: 0.06em;
+  background: var(--surface-2);
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  margin-bottom: 12px;
   font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
 }
 .code-input:focus {
-  border-color: rgba(79,156,249,0.5);
-  box-shadow: 0 0 0 3px rgba(79,156,249,0.12);
+  border-color: rgba(0,122,255,0.4);
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+  background: var(--surface);
 }
-.code-input.input-err { border-color: var(--blocked); box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
+.code-input.input-err {
+  border-color: rgba(255,59,48,0.5);
+  box-shadow: 0 0 0 3px rgba(255,59,48,0.1);
+}
 
 .login-btn {
   width: 100%;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 0;
+  border-radius: 9px;
+  padding: 10px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s;
   font-family: inherit;
+  transition: background 0.13s, transform 0.08s;
+  letter-spacing: -0.01em;
 }
-.login-btn:hover { opacity: 0.88; }
-.login-btn:active { opacity: 0.78; }
+.login-btn:hover { background: var(--accent-d); }
+.login-btn:active { transform: scale(0.98); }
 
 .login-err {
   font-size: 12px;
   color: var(--blocked);
-  margin-top: 10px;
+  margin-top: 8px;
   min-height: 16px;
   text-align: center;
 }
@@ -134,161 +168,213 @@ body {
   font-size: 11px;
   color: var(--text-3);
   text-align: center;
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 18px;
+  padding-top: 18px;
   border-top: 1px solid var(--border);
 }
 
-/* ─── APP SHELL ────────────────────────────────────────────── */
-
+/* ── APP HEADER ─────────────────────────────────────── */
 #app { display: none; }
 
-/* Header */
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 50;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
-  height: 52px;
-  background: rgba(10,10,12,0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  padding: 0 24px;
+  background: rgba(242,242,247,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border);
 }
 
-.header-left { display: flex; align-items: center; gap: 10px; }
+.hdr-left { display: flex; align-items: center; gap: 10px; }
 
-.header-logo {
+.hdr-logo {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-1);
-  background: var(--surface-2);
-  border: 1px solid var(--border-2);
+  color: var(--surface);
+  background: var(--text-1);
   border-radius: 5px;
   padding: 3px 7px;
 }
 
-.header-title {
+.hdr-title {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-2);
+  letter-spacing: -0.01em;
 }
 
-.header-right { display: flex; align-items: center; gap: 12px; }
+.hdr-right { display: flex; align-items: center; gap: 10px; }
 
 .session-badge {
-  font-size: 11px;
+  font-size: 11.5px;
   font-variant-numeric: tabular-nums;
-  color: var(--text-3);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 3px 8px;
-}
-.session-badge.session-warn { color: var(--partial); border-color: var(--partial-border); }
-
-.logout-btn {
-  font-size: 12px;
-  font-weight: 500;
   color: var(--text-2);
-  background: transparent;
+  background: var(--surface);
   border: 1px solid var(--border-2);
   border-radius: 6px;
-  padding: 4px 10px;
-  cursor: pointer;
-  transition: color 0.13s, border-color 0.13s;
-  font-family: inherit;
+  padding: 3px 9px;
+  box-shadow: var(--shadow-sm);
 }
-.logout-btn:hover { color: var(--text-1); border-color: var(--border-2); }
+.session-badge.warn { color: var(--partial); border-color: var(--partial-b); }
 
-/* Stats bar */
-.stats-bar {
+.logout-btn {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 2px;
+  transition: opacity 0.12s;
+}
+.logout-btn:hover { opacity: 0.7; }
+
+/* ── MAC WINDOW ─────────────────────────────────────── */
+.mac-window {
+  margin: 20px 24px 48px;
+  background: var(--surface);
+  border-radius: 14px;
+  border: 1px solid var(--border-2);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.mac-titlebar {
   display: flex;
   align-items: center;
-  gap: 0;
-  padding: 0 28px;
-  background: var(--surface);
+  padding: 10px 14px;
+  background: #F7F7F9;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  user-select: none;
+}
+
+.mac-dots { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+.mac-window-title {
+  flex: 1;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: -0.01em;
+  margin-right: 54px; /* offset for dots width */
+}
+
+/* ── WIDGETS ─────────────────────────────────────────── */
+.widgets-row {
+  display: flex;
+  align-items: stretch;
   border-bottom: 1px solid var(--border);
 }
 
-.stat-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 20px 14px 0;
-  margin-right: 20px;
-  border-right: 1px solid var(--border);
-}
-.stat-box:first-child { padding-left: 0; }
-
-.stat-num {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-.stat-num.c-live { color: var(--live); }
-.stat-num.c-partial { color: var(--partial); }
-.stat-num.c-pending { color: var(--pending); }
-.stat-num.c-blocked { color: var(--blocked); }
-
-.stat-lbl { font-size: 11px; color: var(--text-3); font-weight: 500; }
-
-.stat-progress {
+.widget {
   flex: 1;
-  padding: 14px 0 14px 20px;
+  padding: 16px 20px;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.widget:last-child { border-right: none; }
+
+.widget-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2.5px;
+  border-radius: 0 0 2px 2px;
+}
+.wa-live    { background: var(--live); }
+.wa-partial { background: var(--partial); }
+.wa-pending { background: var(--pending); }
+.wa-blocked { background: var(--blocked); }
+
+.widget-num {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.wn-live    { color: var(--live); }
+.wn-partial { color: var(--partial); }
+.wn-pending { color: var(--pending); }
+.wn-blocked { color: var(--blocked); }
+
+.widget-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.widget-progress {
+  flex: 2;
+  padding: 16px 22px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
 }
 
-.progress-meta {
+.wp-top {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  justify-content: space-between;
 }
-.progress-pct {
-  font-size: 14px;
+
+.wp-pct {
+  font-size: 22px;
   font-weight: 700;
-  color: var(--text-1);
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+  color: var(--text-1);
 }
-.progress-sub { font-size: 11px; color: var(--text-3); }
+
+.wp-sub {
+  font-size: 12px;
+  color: var(--text-3);
+}
 
 .progress-track {
-  height: 4px;
-  background: var(--surface-3);
-  border-radius: 4px;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 6px;
   overflow: hidden;
+  border: 1px solid var(--border);
 }
+
 .progress-fill {
   height: 100%;
   background: var(--live);
-  border-radius: 4px;
+  border-radius: 6px;
   transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* Toolbar */
+/* ── TOOLBAR ─────────────────────────────────────────── */
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
+  gap: 8px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--surface);
 }
 
 .search-input {
   flex: 1;
-  background: var(--surface);
+  background: var(--surface-2);
   border: 1px solid var(--border-2);
-  border-radius: 7px;
-  padding: 8px 12px;
+  border-radius: 8px;
+  padding: 7px 11px;
   font-size: 13px;
   color: var(--text-1);
   outline: none;
@@ -296,71 +382,83 @@ body {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .search-input:focus {
-  border-color: rgba(79,156,249,0.4);
-  box-shadow: 0 0 0 3px rgba(79,156,249,0.08);
+  border-color: rgba(0,122,255,0.4);
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.09);
+  background: var(--surface);
 }
 .search-input::placeholder { color: var(--text-3); }
 
 .filter-select {
-  background: var(--surface);
+  background: var(--surface-2);
   border: 1px solid var(--border-2);
-  border-radius: 7px;
-  padding: 8px 10px;
-  font-size: 12px;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12.5px;
   color: var(--text-2);
   outline: none;
   cursor: pointer;
   font-family: inherit;
-  transition: border-color 0.15s;
+  transition: border-color 0.13s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23AEAEB2' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  padding-right: 26px;
 }
-.filter-select:focus { border-color: rgba(79,156,249,0.4); }
+.filter-select:focus { border-color: rgba(0,122,255,0.4); }
 
 .add-btn {
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 7px;
-  padding: 8px 14px;
+  border-radius: 8px;
+  padding: 7px 14px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   font-family: inherit;
-  transition: opacity 0.13s;
+  transition: background 0.12s, transform 0.08s;
+  letter-spacing: -0.01em;
 }
-.add-btn:hover { opacity: 0.88; }
+.add-btn:hover { background: var(--accent-d); }
+.add-btn:active { transform: scale(0.97); }
 
-/* Sections */
-.sections { padding: 20px 28px 60px; }
+/* ── SECTIONS ─────────────────────────────────────────── */
+.sections { padding: 0; }
 
-.section { margin-bottom: 32px; }
+.section { border-bottom: 1px solid var(--border); }
+.section:last-child { border-bottom: none; }
 
 .section-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #FAFAFC;
   border-bottom: 1px solid var(--border);
 }
+
 .section-title {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-2);
 }
+
 .section-count {
   font-size: 11px;
-  padding: 1px 7px;
-  border-radius: 20px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  font-weight: 600;
   color: var(--text-3);
+  background: var(--surface-3);
+  border-radius: 20px;
+  padding: 1px 7px;
   font-variant-numeric: tabular-nums;
 }
 
-/* Table */
+/* ── TABLE ────────────────────────────────────────────── */
 .table-wrap { overflow-x: auto; }
 
 table { width: 100%; border-collapse: collapse; }
@@ -371,24 +469,26 @@ thead th {
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--text-3);
-  padding: 6px 12px;
+  padding: 8px 14px;
   text-align: left;
   white-space: nowrap;
+  background: var(--surface);
 }
-.th-actions, .th-date { text-align: right; }
+.th-actions { text-align: right; }
+.th-date    { text-align: right; }
 
 tbody tr {
   border-top: 1px solid var(--border);
-  transition: background 0.1s;
+  transition: background 0.09s;
 }
-tbody tr:hover { background: rgba(255,255,255,0.018); }
+tbody tr:hover { background: #F9F9FC; }
 
-td { padding: 10px 12px; vertical-align: middle; }
+td { padding: 10px 14px; vertical-align: middle; }
 
-.task-name { font-size: 14px; font-weight: 500; color: var(--text-1); }
+.task-name { font-size: 14px; font-weight: 500; color: var(--text-1); letter-spacing: -0.008em; }
 .task-note { font-size: 12px; color: var(--text-3); margin-top: 2px; }
 
-.td-status { white-space: nowrap; }
+.td-status   { white-space: nowrap; }
 .td-priority { white-space: nowrap; }
 .td-date {
   font-size: 12px;
@@ -397,110 +497,105 @@ td { padding: 10px 12px; vertical-align: middle; }
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
-.td-actions { text-align: right; white-space: nowrap; }
+.td-actions  { text-align: right; white-space: nowrap; }
 
-/* Badges */
+/* ── BADGES ───────────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
   font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   padding: 3px 8px;
   border-radius: 5px;
   white-space: nowrap;
 }
-.badge.clickable { cursor: pointer; user-select: none; transition: opacity 0.1s; }
-.badge.clickable:hover { opacity: 0.78; }
-.badge.clickable:active { opacity: 0.6; }
+.badge.clickable { cursor: pointer; user-select: none; transition: opacity 0.1s, transform 0.07s; }
+.badge.clickable:hover { opacity: 0.78; transform: scale(0.97); }
 
-.badge-live { color: var(--live); background: var(--live-bg); border: 1px solid var(--live-border); }
-.badge-partial { color: var(--partial); background: var(--partial-bg); border: 1px solid var(--partial-border); }
-.badge-pending { color: var(--pending); background: var(--pending-bg); border: 1px solid var(--pending-border); }
-.badge-blocked { color: var(--blocked); background: var(--blocked-bg); border: 1px solid var(--blocked-border); }
+.badge-live    { color: var(--live);    background: var(--live-bg);    border: 1px solid var(--live-b); }
+.badge-partial { color: var(--partial); background: var(--partial-bg); border: 1px solid var(--partial-b); }
+.badge-pending { color: var(--pending); background: var(--pending-bg); border: 1px solid var(--pending-b); }
+.badge-blocked { color: var(--blocked); background: var(--blocked-bg); border: 1px solid var(--blocked-b); }
 
-/* Priority */
 .pri-badge {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   padding: 2px 6px;
   border-radius: 4px;
 }
-.pri-high { color: #F87171; background: rgba(248,113,113,0.1); }
-.pri-med { color: #FB923C; background: rgba(251,146,60,0.1); }
-.pri-low { color: var(--text-3); background: var(--surface-2); }
+.pri-high { color: #FF3B30; background: rgba(255,59,48,0.08); }
+.pri-med  { color: #FF9F0A; background: rgba(255,159,10,0.08); }
+.pri-low  { color: var(--text-3); background: var(--surface-2); }
 
-/* Action buttons */
+/* ── ACTION BUTTONS ───────────────────────────────────── */
 .action-btn {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 500;
   border: 1px solid var(--border-2);
-  border-radius: 5px;
-  padding: 3px 8px;
+  border-radius: 6px;
+  padding: 3px 9px;
   cursor: pointer;
-  background: transparent;
+  background: var(--surface);
   font-family: inherit;
-  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  transition: color 0.11s, border-color 0.11s, background 0.11s;
   margin-left: 4px;
+  color: var(--text-2);
 }
-.edit-btn { color: var(--text-3); }
-.edit-btn:hover { color: var(--accent); border-color: rgba(79,156,249,0.35); background: var(--accent-bg); }
-.del-btn { color: var(--text-3); }
-.del-btn:hover { color: var(--blocked); border-color: var(--blocked-border); background: var(--blocked-bg); }
+.action-btn:hover { background: var(--surface-2); }
+.edit-btn:hover   { color: var(--accent); border-color: rgba(0,122,255,0.3); }
+.del-btn:hover    { color: var(--blocked); border-color: rgba(255,59,48,0.3); }
 
-/* Empty state */
 .empty {
-  padding: 40px 0;
+  padding: 48px 0;
   text-align: center;
   font-size: 13px;
   color: var(--text-3);
 }
 
-/* ─── MODAL ─────────────────────────────────────────────────── */
-
+/* ── MODAL ────────────────────────────────────────────── */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.72);
+  background: rgba(0,0,0,0.35);
   z-index: 100;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-card {
   background: var(--surface);
-  border: 1px solid var(--border-2);
-  border-radius: 14px;
-  padding: 28px;
+  border-radius: 16px;
   width: 100%;
   max-width: 480px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
 }
 
-.modal-header {
+.modal-chrome {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px;
+  gap: 7px;
+  padding: 10px 14px;
+  background: #F6F6F8;
+  border-bottom: 1px solid var(--border);
 }
-.modal-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
-.modal-close {
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  color: var(--text-3);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: color 0.12s;
-  font-family: inherit;
-  line-height: 1;
+
+.modal-chrome-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  flex: 1;
+  text-align: center;
+  margin-right: 54px;
 }
-.modal-close:hover { color: var(--text-1); }
+
+.modal-body { padding: 22px 24px 24px; }
 
 .form-field { margin-bottom: 14px; }
 .form-field label {
@@ -509,235 +604,242 @@ td { padding: 10px 12px; vertical-align: middle; }
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-3);
+  color: var(--text-2);
   margin-bottom: 5px;
 }
-.optional { font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; }
+.optional { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-3); margin-left: 3px; }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .form-field input,
-.form-field select,
-.form-field textarea {
+.form-field select {
   width: 100%;
   background: var(--surface-2);
   border: 1px solid var(--border-2);
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 8px 10px;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--text-1);
   outline: none;
   font-family: inherit;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.14s, box-shadow 0.14s;
 }
 .form-field input:focus,
 .form-field select:focus {
-  border-color: rgba(79,156,249,0.45);
-  box-shadow: 0 0 0 3px rgba(79,156,249,0.09);
+  border-color: rgba(0,122,255,0.4);
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.09);
+  background: var(--surface);
 }
 
 .modal-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 22px;
+  gap: 8px;
   justify-content: flex-end;
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--border);
 }
 
 .btn-cancel {
-  background: transparent;
+  background: var(--surface-2);
   border: 1px solid var(--border-2);
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-2);
+  color: var(--text-1);
   cursor: pointer;
   font-family: inherit;
-  transition: color 0.12s;
+  transition: background 0.12s;
 }
-.btn-cancel:hover { color: var(--text-1); }
+.btn-cancel:hover { background: var(--surface-3); }
 
 .btn-save {
   background: var(--accent);
   border: none;
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 8px 18px;
   font-size: 13px;
   font-weight: 600;
   color: #fff;
   cursor: pointer;
   font-family: inherit;
-  transition: opacity 0.13s;
+  transition: background 0.12s, transform 0.08s;
 }
-.btn-save:hover { opacity: 0.88; }
+.btn-save:hover { background: var(--accent-d); }
+.btn-save:active { transform: scale(0.97); }
 
-@media (max-width: 600px) {
-  .stats-bar { flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
-  .stat-progress { width: 100%; padding-left: 0; border-top: 1px solid var(--border); padding-top: 12px; }
-  .stat-box { border-right: none; padding-right: 0; margin-right: 8px; }
-  .toolbar { flex-wrap: wrap; padding: 12px 16px; }
-  .search-input { min-width: 100%; }
-  .sections { padding: 16px 16px 40px; }
-  .app-header { padding: 0 16px; }
-  .form-row { grid-template-columns: 1fr; }
-  .th-priority, .th-date, .td-priority, .td-date { display: none; }
+/* ── RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .mac-window   { margin: 12px 12px 32px; }
+  .widgets-row  { flex-wrap: wrap; }
+  .widget       { flex: 1 0 40%; border-right: none; border-bottom: 1px solid var(--border); }
+  .widget-progress { flex: 1 0 100%; border-top: 1px solid var(--border); }
+  .app-header   { padding: 0 14px; }
+  .form-row     { grid-template-columns: 1fr; }
+  .th-priority,.td-priority,.th-date,.td-date { display: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- ─── LOGIN SCREEN ─── -->
+<!-- ── LOGIN ── -->
 <div id="login-screen" class="login-wrap">
   <div class="login-card">
-    <div class="login-brand">TRAP Intelligence Platform</div>
-    <h1 class="login-heading">Build Tracker</h1>
-    <p class="login-sub">This page is access-restricted. Enter your code to view progress.</p>
-    <input
-      type="password"
-      id="code-input"
-      class="code-input"
-      placeholder="Access code"
-      autocomplete="off"
-      maxlength="64"
-    />
-    <button class="login-btn" onclick="doLogin()">Continue</button>
-    <p id="login-err" class="login-err"></p>
-    <p class="login-hint">Session expires after 24 hours</p>
+    <div class="login-chrome">
+      <span class="mac-dot r"></span>
+      <span class="mac-dot y"></span>
+      <span class="mac-dot g"></span>
+    </div>
+    <div class="login-body">
+      <div class="login-eyebrow">TRAP Intelligence Platform</div>
+      <h1 class="login-heading">Build Tracker</h1>
+      <p class="login-sub">Access restricted. Enter your code to view project progress.</p>
+      <input type="password" id="code-input" class="code-input" placeholder="Access code" autocomplete="off" maxlength="64" />
+      <button class="login-btn" onclick="doLogin()">Continue</button>
+      <p id="login-err" class="login-err"></p>
+      <p class="login-hint">Session expires after 24 hours</p>
+    </div>
   </div>
 </div>
 
-<!-- ─── APP ─── -->
+<!-- ── APP ── -->
 <div id="app">
 
   <header class="app-header">
-    <div class="header-left">
-      <span class="header-logo">TRAP</span>
-      <span class="header-title">Build Tracker</span>
+    <div class="hdr-left">
+      <span class="hdr-logo">TRAP</span>
+      <span class="hdr-title">Build Tracker</span>
     </div>
-    <div class="header-right">
+    <div class="hdr-right">
       <span id="session-timer" class="session-badge"></span>
       <button class="logout-btn" onclick="doLogout()">Sign out</button>
     </div>
   </header>
 
-  <div class="stats-bar">
-    <div class="stat-box">
-      <div>
-        <div class="stat-num c-live" id="stat-live">0</div>
-        <div class="stat-lbl">Live</div>
-      </div>
-    </div>
-    <div class="stat-box">
-      <div>
-        <div class="stat-num c-partial" id="stat-partial">0</div>
-        <div class="stat-lbl">Partial</div>
-      </div>
-    </div>
-    <div class="stat-box">
-      <div>
-        <div class="stat-num c-pending" id="stat-pending">0</div>
-        <div class="stat-lbl">Pending</div>
-      </div>
-    </div>
-    <div class="stat-box">
-      <div>
-        <div class="stat-num c-blocked" id="stat-blocked">0</div>
-        <div class="stat-lbl">Blocked</div>
-      </div>
-    </div>
-    <div class="stat-progress">
-      <div class="progress-meta">
-        <span class="progress-pct" id="pct-text">0%</span>
-        <span class="progress-sub" id="pct-sub">features live</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-      </div>
-    </div>
-  </div>
+  <div class="mac-window">
 
-  <div class="toolbar">
-    <input
-      type="text"
-      class="search-input"
-      id="search-input"
-      placeholder="Search features..."
-      oninput="renderSections()"
-    />
-    <select class="filter-select" id="filter-cat" onchange="renderSections()">
-      <option value="">All categories</option>
-      <option value="intel">Intelligence</option>
-      <option value="platform">Platform</option>
-      <option value="admin">Admin Panel</option>
-      <option value="roadmap">Roadmap</option>
-    </select>
-    <select class="filter-select" id="filter-status" onchange="renderSections()">
-      <option value="">All statuses</option>
-      <option value="live">Live</option>
-      <option value="partial">Partial</option>
-      <option value="pending">Pending</option>
-      <option value="blocked">Blocked</option>
-    </select>
-    <button class="add-btn" onclick="openModal()">+ Add Feature</button>
-  </div>
+    <!-- Mac window chrome -->
+    <div class="mac-titlebar">
+      <div class="mac-dots">
+        <span class="mac-dot r"></span>
+        <span class="mac-dot y"></span>
+        <span class="mac-dot g"></span>
+      </div>
+      <span class="mac-window-title">TRAP Intel — Feature Progress</span>
+    </div>
 
-  <div class="sections" id="sections-container"></div>
-</div>
+    <!-- Widgets -->
+    <div class="widgets-row">
+      <div class="widget">
+        <div class="widget-accent wa-live"></div>
+        <div class="widget-num wn-live" id="stat-live">0</div>
+        <div class="widget-lbl">Live</div>
+      </div>
+      <div class="widget">
+        <div class="widget-accent wa-partial"></div>
+        <div class="widget-num wn-partial" id="stat-partial">0</div>
+        <div class="widget-lbl">Partial</div>
+      </div>
+      <div class="widget">
+        <div class="widget-accent wa-pending"></div>
+        <div class="widget-num wn-pending" id="stat-pending">0</div>
+        <div class="widget-lbl">Pending</div>
+      </div>
+      <div class="widget">
+        <div class="widget-accent wa-blocked"></div>
+        <div class="widget-num wn-blocked" id="stat-blocked">0</div>
+        <div class="widget-lbl">Blocked</div>
+      </div>
+      <div class="widget-progress">
+        <div class="wp-top">
+          <span class="wp-pct" id="pct-text">0%</span>
+          <span class="wp-sub" id="pct-sub">features live</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
 
-<!-- ─── ADD / EDIT MODAL ─── -->
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <input type="text" class="search-input" id="search-input" placeholder="Search features..." oninput="renderSections()" />
+      <select class="filter-select" id="filter-cat" onchange="renderSections()">
+        <option value="">All categories</option>
+        <option value="intel">Intelligence</option>
+        <option value="platform">Platform</option>
+        <option value="admin">Admin Panel</option>
+        <option value="roadmap">Roadmap</option>
+      </select>
+      <select class="filter-select" id="filter-status" onchange="renderSections()">
+        <option value="">All statuses</option>
+        <option value="live">Live</option>
+        <option value="partial">Partial</option>
+        <option value="pending">Pending</option>
+        <option value="blocked">Blocked</option>
+      </select>
+      <button class="add-btn" onclick="openModal()">+ Add Feature</button>
+    </div>
+
+    <!-- Sections -->
+    <div class="sections" id="sections-container"></div>
+
+  </div><!-- /mac-window -->
+</div><!-- /app -->
+
+<!-- ── MODAL ── -->
 <div id="modal-overlay" class="modal-overlay" onclick="closeModalOutside(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h2 class="modal-title" id="modal-title-text">Add Feature</h2>
-      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <div class="modal-chrome">
+      <span class="mac-dot r"></span>
+      <span class="mac-dot y"></span>
+      <span class="mac-dot g"></span>
+      <span class="modal-chrome-title" id="modal-title-text">Add Feature</span>
     </div>
-
-    <div class="form-field">
-      <label>Feature name</label>
-      <input type="text" id="f-name" placeholder="e.g. IP Intelligence" />
-    </div>
-
-    <div class="form-field">
-      <label>Notes <span class="optional">optional</span></label>
-      <input type="text" id="f-note" placeholder="Short description or blocker info" />
-    </div>
-
-    <div class="form-row">
+    <div class="modal-body">
       <div class="form-field">
-        <label>Category</label>
-        <select id="f-cat">
-          <option value="intel">Intelligence Module</option>
-          <option value="platform">Platform Feature</option>
-          <option value="admin">Admin Panel</option>
-          <option value="roadmap">Roadmap / Pending</option>
-        </select>
+        <label>Feature name</label>
+        <input type="text" id="f-name" placeholder="e.g. Wallet Tracer" />
       </div>
       <div class="form-field">
-        <label>Status</label>
-        <select id="f-status">
-          <option value="live">Live</option>
-          <option value="partial">Partial</option>
-          <option value="pending">Pending</option>
-          <option value="blocked">Blocked</option>
-        </select>
+        <label>Notes <span class="optional">optional</span></label>
+        <input type="text" id="f-note" placeholder="Short description or blocker info" />
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Category</label>
+          <select id="f-cat">
+            <option value="intel">Intelligence Module</option>
+            <option value="platform">Platform Feature</option>
+            <option value="admin">Admin Panel</option>
+            <option value="roadmap">Roadmap / Pending</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select id="f-status">
+            <option value="live">Live</option>
+            <option value="partial">Partial</option>
+            <option value="pending">Pending</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Priority</label>
+          <select id="f-priority">
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Date <span class="optional">optional</span></label>
+          <input type="text" id="f-date" placeholder="e.g. Aug 25" />
+        </div>
       </div>
     </div>
-
-    <div class="form-row">
-      <div class="form-field">
-        <label>Priority</label>
-        <select id="f-priority">
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
-      <div class="form-field">
-        <label>Date <span class="optional">optional</span></label>
-        <input type="text" id="f-date" placeholder="e.g. Aug 25" />
-      </div>
-    </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" id="modal-save-btn" onclick="saveTask()">Add Feature</button>
@@ -746,11 +848,9 @@ td { padding: 10px 12px; vertical-align: middle; }
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────
 const ACCESS_CODE = 'TRAP2026';
 const SESSION_MS  = 24 * 60 * 60 * 1000;
 
-// ─── SEED DATA ────────────────────────────────────────────
 const SEED = [
   {id:'1',  name:'IP Intelligence',              note:'IPQS fraud score, LeakOSINT breach data, dark web hits',          cat:'intel',    status:'live',    priority:'high',   date:'Aug 6'},
   {id:'2',  name:'Wallet Tracer',                note:'BTC + ETH live; BSC & Chain Abuse pending API keys',               cat:'intel',    status:'partial', priority:'high',   date:'Aug 9'},
@@ -768,12 +868,16 @@ const SEED = [
   {id:'14', name:'Discovery / Entity Palette',   note:'8-vector routing, scan queue, multi-URL sequential scanning',     cat:'platform', status:'live',    priority:'high',   date:'Aug 19'},
   {id:'15', name:'Seizure Watchdog',             note:'FBI / Europol / NCA detection, red/amber banner, graph node',     cat:'platform', status:'live',    priority:'medium', date:'Aug 19'},
   {id:'16', name:'Investigation Inspector',      note:'Card layout, expand + hit table, 335k ES live pagination',        cat:'platform', status:'live',    priority:'high',   date:'Aug 22'},
-  {id:'17', name:'Authentication & Users',       note:'JWT auth, Brevo email, role-based admin access',                  cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
-  {id:'18', name:'Progress Tracker',             note:'Feature status board, access code gate, 24hr session',            cat:'admin',    status:'live',    priority:'low',    date:'Aug 25'},
-  {id:'19', name:'BSC Wallet Chain',             note:'Waiting on BscScan API key',                                       cat:'roadmap',  status:'pending', priority:'medium', date:''},
-  {id:'20', name:'Chain Abuse Integration',      note:'Waiting on Breadcrumbs credit top-up',                            cat:'roadmap',  status:'pending', priority:'low',    date:''},
-  {id:'21', name:'Credentials Tab (LeakSights)', note:'API key expired Aug 15 — renewal needed',                         cat:'roadmap',  status:'blocked', priority:'high',   date:''},
-  {id:'22', name:'Per-hit Profile Enrichment',   note:'Auto-enrich each result with full profile data',                  cat:'roadmap',  status:'pending', priority:'low',    date:''},
+  {id:'17', name:'Authentication & User Access', note:'JWT auth, Brevo email, role-based admin login',                   cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
+  {id:'18', name:'Build Progress Tracker',       note:'Feature status board, access code gate, 24hr session',            cat:'admin',    status:'live',    priority:'low',    date:'Aug 25'},
+  {id:'19', name:'API Token Manager',            note:'Hot-reload API tokens from admin panel without service restart',  cat:'admin',    status:'pending', priority:'high',   date:''},
+  {id:'20', name:'User Management Interface',    note:'Create, edit, deactivate user accounts and assign roles',         cat:'admin',    status:'pending', priority:'medium', date:''},
+  {id:'21', name:'Analytics & Usage Reports',    note:'Query stats, API call volumes, per-user usage breakdown',         cat:'admin',    status:'pending', priority:'medium', date:''},
+  {id:'22', name:'Audit Log Viewer',             note:'Full audit trail: logins, searches, exports, role changes',       cat:'admin',    status:'pending', priority:'low',    date:''},
+  {id:'23', name:'BSC Wallet Chain',             note:'Waiting on BscScan API key',                                       cat:'roadmap',  status:'pending', priority:'medium', date:''},
+  {id:'24', name:'Chain Abuse Integration',      note:'Waiting on Breadcrumbs credit top-up',                            cat:'roadmap',  status:'pending', priority:'low',    date:''},
+  {id:'25', name:'Credentials Tab (LeakSights)', note:'API key expired Aug 15 — renewal needed',                         cat:'roadmap',  status:'blocked', priority:'high',   date:''},
+  {id:'26', name:'Per-hit Profile Enrichment',   note:'Auto-enrich each result with full profile data',                  cat:'roadmap',  status:'pending', priority:'low',    date:''},
 ];
 
 const SECTIONS = [
@@ -789,28 +893,24 @@ const STATUS_CYCLE = {live:'partial', partial:'pending', pending:'blocked', bloc
 const PRI_LBL      = {high:'HIGH', medium:'MED', low:'LOW'};
 const PRI_CLS      = {high:'pri-high', medium:'pri-med', low:'pri-low'};
 
-// ─── AUTH ─────────────────────────────────────────────────
+/* ── AUTH ── */
 function checkAuth() {
-  try {
-    const s = JSON.parse(localStorage.getItem('trap_session') || '{}');
-    return s.expiry && Date.now() < s.expiry;
-  } catch { return false; }
+  try { const s = JSON.parse(localStorage.getItem('trap_session')||'{}'); return s.expiry && Date.now() < s.expiry; }
+  catch { return false; }
 }
-
 function doLogin() {
-  const val = (document.getElementById('code-input').value || '').trim();
+  const val = (document.getElementById('code-input').value||'').trim();
   if (val === ACCESS_CODE) {
     localStorage.setItem('trap_session', JSON.stringify({expiry: Date.now() + SESSION_MS}));
     showApp();
   } else {
     const el = document.getElementById('code-input');
-    const err = document.getElementById('login-err');
+    const er = document.getElementById('login-err');
     el.classList.add('input-err');
-    err.textContent = 'Incorrect access code. Try again.';
-    setTimeout(() => { el.classList.remove('input-err'); err.textContent = ''; }, 2500);
+    er.textContent = 'Incorrect access code.';
+    setTimeout(() => { el.classList.remove('input-err'); er.textContent = ''; }, 2500);
   }
 }
-
 function doLogout() {
   localStorage.removeItem('trap_session');
   clearInterval(timerRef);
@@ -818,19 +918,17 @@ function doLogout() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('code-input').value = '';
 }
-
 function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   initApp();
 }
 
-// ─── SESSION TIMER ────────────────────────────────────────
+/* ── TIMER ── */
 let timerRef = null;
-
 function updateTimer() {
   try {
-    const {expiry} = JSON.parse(localStorage.getItem('trap_session') || '{}');
+    const {expiry} = JSON.parse(localStorage.getItem('trap_session')||'{}');
     const rem = expiry - Date.now();
     if (rem <= 0) { doLogout(); return; }
     const h = Math.floor(rem / 3600000);
@@ -838,43 +936,31 @@ function updateTimer() {
     const el = document.getElementById('session-timer');
     if (!el) return;
     el.textContent = `${h}h ${String(m).padStart(2,'0')}m left`;
-    el.className = 'session-badge' + (rem < 3600000 ? ' session-warn' : '');
+    el.className = 'session-badge' + (rem < 3600000 ? ' warn' : '');
   } catch {}
 }
 
-// ─── TASKS ────────────────────────────────────────────────
+/* ── TASKS ── */
 function getTasks() {
-  try {
-    const raw = localStorage.getItem('trap_tasks');
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return SEED.map(t => ({...t}));
+  try { const r = localStorage.getItem('trap_tasks'); if (r) return JSON.parse(r); } catch {}
+  return SEED.map(t=>({...t}));
 }
-
-function putTasks(tasks) {
-  localStorage.setItem('trap_tasks', JSON.stringify(tasks));
-}
+function putTasks(t) { localStorage.setItem('trap_tasks', JSON.stringify(t)); }
 
 function cycleStatus(id) {
   const tasks = getTasks();
-  const t = tasks.find(x => x.id === id);
-  if (t) { t.status = STATUS_CYCLE[t.status] || 'live'; putTasks(tasks); renderSections(); updateStats(); }
+  const t = tasks.find(x=>x.id===id);
+  if (t) { t.status = STATUS_CYCLE[t.status]||'live'; putTasks(tasks); renderSections(); updateStats(); }
 }
+function deleteTask(id) { putTasks(getTasks().filter(t=>t.id!==id)); renderSections(); updateStats(); }
 
-function deleteTask(id) {
-  putTasks(getTasks().filter(t => t.id !== id));
-  renderSections();
-  updateStats();
-}
-
-// ─── MODAL ────────────────────────────────────────────────
+/* ── MODAL ── */
 let editId = null;
-
 function openModal(id) {
-  editId = id || null;
-  const t = id ? getTasks().find(x => x.id === id) : null;
-  document.getElementById('modal-title-text').textContent  = t ? 'Edit Feature' : 'Add Feature';
-  document.getElementById('modal-save-btn').textContent    = t ? 'Save Changes' : 'Add Feature';
+  editId = id||null;
+  const t = id ? getTasks().find(x=>x.id===id) : null;
+  document.getElementById('modal-title-text').textContent = t ? 'Edit Feature' : 'Add Feature';
+  document.getElementById('modal-save-btn').textContent   = t ? 'Save Changes' : 'Add Feature';
   document.getElementById('f-name').value     = t ? t.name     : '';
   document.getElementById('f-note').value     = t ? t.note     : '';
   document.getElementById('f-cat').value      = t ? t.cat      : 'intel';
@@ -884,157 +970,98 @@ function openModal(id) {
   document.getElementById('modal-overlay').style.display = 'flex';
   setTimeout(() => document.getElementById('f-name').focus(), 40);
 }
-
-function closeModal() {
-  document.getElementById('modal-overlay').style.display = 'none';
-  editId = null;
-}
-
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-}
-
+function closeModal() { document.getElementById('modal-overlay').style.display='none'; editId=null; }
+function closeModalOutside(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
 function saveTask() {
-  const name = (document.getElementById('f-name').value || '').trim();
+  const name = (document.getElementById('f-name').value||'').trim();
   if (!name) { document.getElementById('f-name').focus(); return; }
-
   const tasks = getTasks();
   const data = {
-    name,
-    note:     (document.getElementById('f-note').value || '').trim(),
-    cat:      document.getElementById('f-cat').value,
-    status:   document.getElementById('f-status').value,
-    priority: document.getElementById('f-priority').value,
-    date:     (document.getElementById('f-date').value || '').trim(),
+    name, note:(document.getElementById('f-note').value||'').trim(),
+    cat:document.getElementById('f-cat').value, status:document.getElementById('f-status').value,
+    priority:document.getElementById('f-priority').value, date:(document.getElementById('f-date').value||'').trim(),
   };
-
-  if (editId) {
-    const t = tasks.find(x => x.id === editId);
-    if (t) Object.assign(t, data);
-  } else {
-    tasks.push({id: Date.now().toString(), ...data});
-  }
-
-  putTasks(tasks);
-  closeModal();
-  renderSections();
-  updateStats();
+  if (editId) { const t=tasks.find(x=>x.id===editId); if(t) Object.assign(t,data); }
+  else tasks.push({id:Date.now().toString(),...data});
+  putTasks(tasks); closeModal(); renderSections(); updateStats();
 }
 
-// ─── RENDER ───────────────────────────────────────────────
-function esc(s) {
-  return String(s || '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
+/* ── RENDER ── */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function getFiltered() {
-  const q   = (document.getElementById('search-input')?.value || '').toLowerCase();
-  const cat = document.getElementById('filter-cat')?.value || '';
-  const st  = document.getElementById('filter-status')?.value || '';
+  const q   = (document.getElementById('search-input')?.value||'').toLowerCase();
+  const cat = document.getElementById('filter-cat')?.value||'';
+  const st  = document.getElementById('filter-status')?.value||'';
   return getTasks().filter(t => {
-    if (cat && t.cat !== cat) return false;
-    if (st  && t.status !== st) return false;
+    if (cat && t.cat!==cat) return false;
+    if (st  && t.status!==st) return false;
     if (q && !t.name.toLowerCase().includes(q) && !(t.note||'').toLowerCase().includes(q)) return false;
     return true;
   });
 }
 
 function renderSections() {
-  const container = document.getElementById('sections-container');
-  if (!container) return;
+  const c = document.getElementById('sections-container');
+  if (!c) return;
   const tasks = getFiltered();
-
-  const html = SECTIONS.map(sec => {
-    const items = tasks.filter(t => t.cat === sec.key);
+  c.innerHTML = SECTIONS.map(sec => {
+    const items = tasks.filter(t=>t.cat===sec.key);
     if (!items.length) return '';
-
-    const rows = items.map(t => `
-      <tr>
-        <td class="td-name">
-          <div class="task-name">${esc(t.name)}</div>
-          ${t.note ? `<div class="task-note">${esc(t.note)}</div>` : ''}
-        </td>
-        <td class="td-status">
-          <span class="badge ${STATUS_CLS[t.status]} clickable"
-                onclick="cycleStatus('${t.id}')"
-                title="Click to cycle status">${STATUS_LBL[t.status]}</span>
-        </td>
-        <td class="td-priority">
-          <span class="pri-badge ${PRI_CLS[t.priority]}">${PRI_LBL[t.priority]}</span>
-        </td>
-        <td class="td-date">${t.date ? esc(t.date) : '—'}</td>
-        <td class="td-actions">
-          <button class="action-btn edit-btn" onclick="openModal('${t.id}')">Edit</button>
-          <button class="action-btn del-btn"  onclick="confirmDel('${t.id}')">Del</button>
-        </td>
-      </tr>`).join('');
-
-    return `
-      <div class="section">
-        <div class="section-header">
-          <span class="section-title">${esc(sec.label)}</span>
-          <span class="section-count">${items.length}</span>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th class="th-name">Feature</th>
-                <th class="th-status">Status</th>
-                <th class="th-priority">Priority</th>
-                <th class="th-date">Date</th>
-                <th class="th-actions"></th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>
-      </div>`;
-  }).join('');
-
-  container.innerHTML = html || '<div class="empty">No features match the current filter.</div>';
+    return `<div class="section">
+      <div class="section-header">
+        <span class="section-title">${esc(sec.label)}</span>
+        <span class="section-count">${items.length}</span>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr>
+          <th class="th-name">Feature</th>
+          <th class="th-status">Status</th>
+          <th class="th-priority">Priority</th>
+          <th class="th-date">Date</th>
+          <th class="th-actions"></th>
+        </tr></thead>
+        <tbody>${items.map(t=>`<tr>
+          <td><div class="task-name">${esc(t.name)}</div>${t.note?`<div class="task-note">${esc(t.note)}</div>`:''}</td>
+          <td class="td-status"><span class="badge ${STATUS_CLS[t.status]} clickable" onclick="cycleStatus('${t.id}')" title="Click to cycle status">${STATUS_LBL[t.status]}</span></td>
+          <td class="td-priority"><span class="pri-badge ${PRI_CLS[t.priority]}">${PRI_LBL[t.priority]}</span></td>
+          <td class="td-date">${t.date?esc(t.date):'—'}</td>
+          <td class="td-actions">
+            <button class="action-btn edit-btn" onclick="openModal('${t.id}')">Edit</button>
+            <button class="action-btn del-btn"  onclick="if(confirm('Remove this feature?'))deleteTask('${t.id}')">Del</button>
+          </td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>`;
+  }).join('') || '<div class="empty">No features match the current filter.</div>';
 }
 
 function updateStats() {
   const tasks = getTasks();
-  const counts = {live:0, partial:0, pending:0, blocked:0};
-  tasks.forEach(t => { counts[t.status] = (counts[t.status]||0) + 1; });
+  const c = {live:0,partial:0,pending:0,blocked:0};
+  tasks.forEach(t => { c[t.status]=(c[t.status]||0)+1; });
   const total = tasks.length;
-  const pct = total ? Math.round((counts.live / total) * 100) : 0;
-
-  document.getElementById('stat-live').textContent    = counts.live;
-  document.getElementById('stat-partial').textContent = counts.partial;
-  document.getElementById('stat-pending').textContent = counts.pending;
-  document.getElementById('stat-blocked').textContent = counts.blocked;
-  document.getElementById('pct-text').textContent     = pct + '%';
-  document.getElementById('pct-sub').textContent      = `${counts.live} of ${total} features live`;
-  document.getElementById('progress-fill').style.width = pct + '%';
+  const pct   = total ? Math.round((c.live/total)*100) : 0;
+  document.getElementById('stat-live').textContent    = c.live;
+  document.getElementById('stat-partial').textContent = c.partial;
+  document.getElementById('stat-pending').textContent = c.pending;
+  document.getElementById('stat-blocked').textContent = c.blocked;
+  document.getElementById('pct-text').textContent     = pct+'%';
+  document.getElementById('pct-sub').textContent      = `${c.live} of ${total} features live`;
+  document.getElementById('progress-fill').style.width = pct+'%';
 }
 
-function confirmDel(id) {
-  if (window.confirm('Remove this feature from the tracker?')) deleteTask(id);
-}
-
-// ─── INIT ─────────────────────────────────────────────────
+/* ── INIT ── */
 function initApp() {
-  if (!localStorage.getItem('trap_tasks')) putTasks(SEED.map(t => ({...t})));
-  renderSections();
-  updateStats();
-  updateTimer();
+  if (!localStorage.getItem('trap_tasks')) putTasks(SEED.map(t=>({...t})));
+  renderSections(); updateStats(); updateTimer();
   clearInterval(timerRef);
   timerRef = setInterval(updateTimer, 30000);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('code-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
+  document.getElementById('code-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
   if (checkAuth()) showApp();
 });
 </script>
