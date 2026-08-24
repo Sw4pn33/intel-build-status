@@ -893,7 +893,7 @@ td { padding: 10px 14px; vertical-align: middle; }
             <span class="sb-count" id="cnt-user">0</span>
           </a>
           <a class="sb-nav-item sub" data-view="user-intel" onclick="setView('user-intel')">
-            <span>Intelligence Modules</span>
+            <span>Intelligence Vectors</span>
             <span class="sb-count" id="cnt-intel">0</span>
           </a>
           <a class="sb-nav-item sub" data-view="user-platform" onclick="setView('user-platform')">
@@ -1081,27 +1081,45 @@ td { padding: 10px 14px; vertical-align: middle; }
 <script>
 const ACCESS_CODE  = 'TRAP2026';
 const SESSION_MS   = 24 * 60 * 60 * 1000;
-const SEED_VERSION = 'v4'; // bump when SEED changes to force localStorage reset
+const SEED_VERSION = 'v5'; // bump when SEED changes to force localStorage reset
 
 const SEED = [
-  // ── Intelligence Modules
-  {id:'1',  name:'IP Intelligence',              note:'IPQS fraud score, LeakOSINT breach data, dark web hits',          cat:'intel',    status:'live',    priority:'high',   date:'Aug 6'},
-  {id:'2',  name:'Wallet Tracer',                note:'BTC + ETH live; BSC & Chain Abuse pending API keys',               cat:'intel',    status:'partial', priority:'high',   date:'Aug 9'},
-  {id:'3',  name:'Username Intelligence',        note:'Platform lookup, dark web forum posts, stealer logs',              cat:'intel',    status:'live',    priority:'high',   date:'Aug 20'},
-  {id:'4',  name:'Email Intelligence',           note:'Breach lookup, social profiles, reputation scoring',               cat:'intel',    status:'live',    priority:'high',   date:'Aug 20'},
-  {id:'5',  name:'Website Intelligence',         note:'urlscan, WHOIS, CDX, Wayback, Archive, credentials tab',          cat:'intel',    status:'live',    priority:'medium', date:'Aug 9'},
-  {id:'6',  name:'Onion Intelligence',           note:'23-module Tor scanner, screenshots, circuit animation',            cat:'intel',    status:'live',    priority:'high',   date:'Aug 18'},
-  {id:'7',  name:'Dark Handle Intelligence',     note:'Global ES search, forum presence & PII, threat actor pivot',      cat:'intel',    status:'live',    priority:'medium', date:'Aug 24'},
-  {id:'8',  name:'Threat Actor Profiles',        note:'3-tier resolution, actor database, forum presence card',           cat:'intel',    status:'live',    priority:'medium', date:'Aug 15'},
-  // ── Platform Features
-  {id:'9',  name:'Dashboard & Stats',            note:'Live metrics, activity feed, summary cards',                       cat:'platform', status:'live',    priority:'medium', date:'Aug 3'},
-  {id:'10', name:'Compromised Credentials',      note:'Stealer log search, breach database lookup',                       cat:'platform', status:'live',    priority:'high',   date:'Aug 3'},
-  {id:'11', name:'Government Watch',             note:'Regulatory monitoring, govt-linked entity tracking',               cat:'platform', status:'live',    priority:'medium', date:'Aug 3'},
-  {id:'12', name:'Surface Web Search',           note:'SearxNG, 4 pages parallel, 80–93 results per query',              cat:'platform', status:'live',    priority:'medium', date:'Aug 17'},
-  {id:'13', name:'Investigation Graph',          note:'ReactFlow canvas, 14 section types, edge delete, pagination',     cat:'platform', status:'live',    priority:'high',   date:'Aug 22'},
-  {id:'14', name:'Discovery / Entity Palette',   note:'8-vector routing, scan queue, multi-URL sequential scanning',     cat:'platform', status:'live',    priority:'high',   date:'Aug 19'},
-  {id:'15', name:'Seizure Watchdog',             note:'FBI / Europol / NCA detection, red/amber banner, graph node',     cat:'platform', status:'live',    priority:'medium', date:'Aug 19'},
-  {id:'16', name:'Investigation Inspector',      note:'Card layout, expand + hit table, 335k ES live pagination',        cat:'platform', status:'live',    priority:'high',   date:'Aug 22'},
+  // ── Intelligence Modules (PRD OSINT Vectors + Dark Web)
+  // ✅ LIVE
+  {id:'I01', name:'IP Intelligence',              note:'IPQS fraud score, LeakOSINT breach data, dark web hits — Vector 8',         cat:'intel', status:'live',    priority:'high',   date:'Aug 6'},
+  {id:'I02', name:'Username Intelligence',        note:'Platform lookup, dark web posts, stealer logs, cross-platform — Vector 2',  cat:'intel', status:'live',    priority:'high',   date:'Aug 20'},
+  {id:'I03', name:'Email Intelligence',           note:'Breach lookup, social profiles, WHOIS, reputation — Vector 3',              cat:'intel', status:'live',    priority:'high',   date:'Aug 20'},
+  {id:'I04', name:'Website Intelligence',         note:'urlscan, WHOIS, CDX, Wayback, Archive, entity extraction — Vector 6',      cat:'intel', status:'live',    priority:'medium', date:'Aug 9'},
+  {id:'I05', name:'Onion Intelligence',           note:'23-module Tor scanner, screenshots, Tor circuit animation — Dark Web M2',   cat:'intel', status:'live',    priority:'high',   date:'Aug 18'},
+  {id:'I06', name:'Dark Handle Intelligence',     note:'Global ES search, forum presence & PII, threat actor pivot — DW Vector',    cat:'intel', status:'live',    priority:'medium', date:'Aug 24'},
+  {id:'I07', name:'Threat Actor Profiles',        note:'3-tier resolution, actor database, forum presence, wallets — DW Module',    cat:'intel', status:'live',    priority:'medium', date:'Aug 15'},
+  {id:'I08', name:'Wallet Tracer',                note:'BTC + ETH live; BSC pending BscScan key; Chain Abuse pending credits',      cat:'intel', status:'partial', priority:'high',   date:'Aug 9'},
+  // ⏳ PENDING — PRD vectors not yet built in TRAP
+  {id:'I09', name:'Name / Person Intelligence',   note:'Search engines, social networks, leaks, news, documents — Vector 1',       cat:'intel', status:'pending', priority:'high',   date:''},
+  {id:'I10', name:'Phone Number Intelligence',    note:'Public references, directories, social profiles, leak references — V4',    cat:'intel', status:'pending', priority:'high',   date:''},
+  {id:'I11', name:'Domain Intelligence',          note:'WHOIS, DNS, subdomains, certs, tracking IDs, shared infra — Vector 5',     cat:'intel', status:'pending', priority:'high',   date:''},
+  {id:'I12', name:'Subdomain Intelligence',       note:'Related subdomains, certs, shared infra, hosting, tech — Vector 7',        cat:'intel', status:'pending', priority:'medium', date:''},
+  {id:'I13', name:'Organization Intelligence',    note:'Domains, employees, social, news, repos, infra, attack surface — V10',     cat:'intel', status:'pending', priority:'medium', date:''},
+  {id:'I14', name:'Favicon Hash Intelligence',    note:'Shared favicon lookup via Shodan — phishing infra clustering',             cat:'intel', status:'pending', priority:'low',    date:''},
+  {id:'I15', name:'Keyword Discovery (Dark Web)', note:'Search onion engines, forums, markets, paste sites by keyword — DW M1',    cat:'intel', status:'pending', priority:'high',   date:''},
+  // ── Platform Features (PRD: Monitoring Module + core platform)
+  // ✅ LIVE
+  {id:'P01', name:'Dashboard & Stats',            note:'Live metrics, activity feed, user/investigation summary cards',             cat:'platform', status:'live', priority:'medium', date:'Aug 3'},
+  {id:'P02', name:'Compromised Credentials',      note:'Stealer log search, breach database lookup',                               cat:'platform', status:'live', priority:'high',   date:'Aug 3'},
+  {id:'P03', name:'Government Watch',             note:'Public dark web leaks, breach claims, CERT advisories — Monitor M1',       cat:'platform', status:'live', priority:'medium', date:'Aug 3'},
+  {id:'P04', name:'Surface Web Search',           note:'SearxNG, 4 pages parallel, 80–93 results per query',                      cat:'platform', status:'live', priority:'medium', date:'Aug 17'},
+  {id:'P05', name:'Investigation Graph',          note:'ReactFlow, 14 section types, edge delete, ES pagination, full parity',     cat:'platform', status:'live', priority:'high',   date:'Aug 22'},
+  {id:'P06', name:'Discovery / Entity Palette',   note:'8-vector routing, scan queue, multi-URL sequential scanning',              cat:'platform', status:'live', priority:'high',   date:'Aug 19'},
+  {id:'P07', name:'Seizure Watchdog',             note:'FBI / Europol / NCA detection, red/amber banner, graph node',              cat:'platform', status:'live', priority:'medium', date:'Aug 19'},
+  {id:'P08', name:'Investigation Inspector',      note:'Card layout, [N] format, expand+hit table, 335k ES live pagination',       cat:'platform', status:'live', priority:'high',   date:'Aug 22'},
+  // ⏳ PENDING — PRD Monitoring module not yet built
+  {id:'P09', name:'Defacement Watch',             note:'Zone-H & public archives — govt/edu/banking website defacements — M2',     cat:'platform', status:'pending', priority:'medium', date:''},
+  {id:'P10', name:'Ransomware Watch',             note:'ransomware.live public feed — victim tracking, group activity — M3',       cat:'platform', status:'pending', priority:'medium', date:''},
+  {id:'P11', name:'Watchlists',                   note:'Persistent monitors on entities; new match alerts on change',              cat:'platform', status:'pending', priority:'high',   date:''},
+  {id:'P12', name:'Scheduled Searches',           note:'Auto-run searches on a schedule; save & rerun any query automatically',    cat:'platform', status:'pending', priority:'medium', date:''},
+  {id:'P13', name:'Alert History & Notification Rules', note:'Alert feed, notification channels (email/in-app), custom rules',    cat:'platform', status:'pending', priority:'medium', date:''},
+  {id:'P14', name:'Entity Common Profile View',   note:'Unified 6-tab entity view: Overview/Relationships/Intel/Timeline/Evidence/Investigation', cat:'platform', status:'pending', priority:'high', date:''},
+  {id:'P15', name:'PDF Report Export',            note:'Per-entity investigation report; threat actor dossier PDF export',         cat:'platform', status:'pending', priority:'medium', date:''},
   // ── Admin Panel (PRD Section: Administration)
   {id:'17', name:'Authentication & User Access', note:'JWT auth, Brevo email, role-based login (super_admin + admin)',   cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
   {id:'18', name:'Build Progress Tracker',       note:'This board — access code gate, 24hr session, CRUD features',     cat:'admin',    status:'live',    priority:'low',    date:'Aug 25'},
@@ -1136,7 +1154,7 @@ const VIEW_CONFIG = {
 };
 
 const SECTIONS_CONFIG = [
-  {key:'intel',    label:'Intelligence Modules'},
+  {key:'intel',    label:'Intelligence Vectors'},
   {key:'platform', label:'Platform Features'},
   {key:'admin',    label:'Admin Panel'},
   {key:'roadmap',  label:'Roadmap / Pending'},
