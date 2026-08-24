@@ -36,10 +36,15 @@
   --dot-r:     #FF5F57;
   --dot-y:     #FFBD2E;
   --dot-g:     #28C840;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 8px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.07);
   --shadow-xl: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
-  --radius:    12px;
+  /* Liquid Glass */
+  --glass-bg:      rgba(255,255,255,0.62);
+  --glass-bg-2:    rgba(255,255,255,0.48);
+  --glass-border:  rgba(255,255,255,0.72);
+  --glass-shadow:  0 8px 32px rgba(0,0,0,0.07), 0 1px 0 rgba(255,255,255,0.85) inset, 0 -1px 0 rgba(0,0,0,0.04) inset;
+  --glass-blur:    blur(40px) saturate(200%) brightness(102%);
 }
 
 body {
@@ -52,11 +57,31 @@ body {
   min-height: 100vh;
 }
 
-/* ── SCROLLBAR ─────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.24); }
+
+/* ── LIQUID GLASS + ANIMATIONS ──────────────────────────── */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scaleIn  { from { opacity:0; transform:scale(0.94) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+@keyframes badgePop { 0%{transform:scale(1)} 40%{transform:scale(0.88)} 70%{transform:scale(1.07)} 100%{transform:scale(1)} }
+@keyframes countUp  { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+@keyframes shimmer  {
+  0%   { transform:translateX(-100%) skewX(-15deg); }
+  100% { transform:translateX(220%) skewX(-15deg); }
+}
+@keyframes rowIn {
+  from { opacity:0; transform:translateX(-4px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes progressPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,122,255,0); }
+  50%      { box-shadow: 0 0 0 4px rgba(0,122,255,0.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
 
 /* ── LOGIN ─────────────────────────────────────────── */
 .login-wrap {
@@ -65,15 +90,23 @@ body {
   align-items: center;
   justify-content: center;
   padding: 24px;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 20%, rgba(0,122,255,0.07), transparent),
+    radial-gradient(ellipse 50% 60% at 75% 80%, rgba(175,82,222,0.06), transparent),
+    var(--bg);
 }
 
 .login-card {
   width: 100%;
   max-width: 380px;
-  background: var(--surface);
-  border-radius: 16px;
-  box-shadow: var(--shadow-xl);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-xl), 0 1px 0 rgba(255,255,255,0.9) inset;
   overflow: hidden;
+  animation: scaleIn 0.35s cubic-bezier(0.34,1.12,0.64,1) both;
 }
 
 .login-chrome {
@@ -81,8 +114,9 @@ body {
   align-items: center;
   gap: 7px;
   padding: 11px 14px;
-  background: #F6F6F8;
-  border-bottom: 1px solid var(--border);
+  background: rgba(246,246,248,0.75);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.65);
 }
 
 .mac-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
@@ -129,15 +163,8 @@ body {
   margin-bottom: 10px;
   letter-spacing: 0.04em;
 }
-.code-input:focus {
-  border-color: rgba(0,122,255,0.4);
-  box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
-  background: var(--surface);
-}
-.code-input.input-err {
-  border-color: rgba(255,59,48,0.5);
-  box-shadow: 0 0 0 3px rgba(255,59,48,0.1);
-}
+.code-input:focus { border-color: rgba(0,122,255,0.4); box-shadow: 0 0 0 3px rgba(0,122,255,0.1); background: var(--surface); }
+.code-input.input-err { border-color: rgba(255,59,48,0.5); box-shadow: 0 0 0 3px rgba(255,59,48,0.1); }
 
 .login-btn {
   width: 100%;
@@ -151,7 +178,6 @@ body {
   cursor: pointer;
   font-family: inherit;
   transition: background 0.13s, transform 0.08s;
-  letter-spacing: -0.01em;
 }
 .login-btn:hover { background: var(--accent-d); }
 .login-btn:active { transform: scale(0.98); }
@@ -180,84 +206,192 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
-  height: 52px;
+  height: 50px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  background: rgba(242,242,247,0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  background: rgba(242,242,247,0.7);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 0 0 0.5px rgba(0,0,0,0.05);
 }
-
-.hdr-left { display: flex; align-items: center; gap: 10px; }
 
 .hdr-logo {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: var(--surface);
+  color: #fff;
   background: var(--text-1);
   border-radius: 5px;
   padding: 3px 7px;
+  margin-right: 10px;
 }
 
 .hdr-title {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-2);
+}
+
+/* ── APP LAYOUT ─────────────────────────────────────── */
+.app-layout {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100vh - 50px);
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 50px;
+  height: calc(100vh - 50px);
+  overflow-y: auto;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border);
+  box-shadow: 1px 0 0 rgba(0,0,0,0.04), inset -1px 0 0 rgba(255,255,255,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-section { padding: 16px 12px 8px; }
+
+.sb-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.sb-panel-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.sb-panel-link {
+  font-size: 13px;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.1s;
+  line-height: 1;
+}
+.sb-panel-link:hover { background: rgba(0,122,255,0.08); }
+
+.sb-panel-url {
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-bottom: 8px;
+  padding-left: 2px;
   letter-spacing: -0.01em;
 }
 
-.hdr-right { display: flex; align-items: center; gap: 10px; }
+.sb-nav { display: flex; flex-direction: column; gap: 1px; }
+
+.sb-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: background 0.18s cubic-bezier(0.4,0,0.2,1), color 0.18s ease, transform 0.14s cubic-bezier(0.34,1.56,0.64,1);
+  user-select: none;
+}
+.sb-nav-item:hover { background: rgba(255,255,255,0.55); color: var(--text-1); transform: translateX(1px); }
+.sb-nav-item.active {
+  background: rgba(255,255,255,0.75);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 1px 0 rgba(255,255,255,0.9) inset;
+  backdrop-filter: blur(8px);
+}
+.sb-nav-item.sub { padding-left: 20px; font-size: 12.5px; color: var(--text-3); }
+.sb-nav-item.sub:hover { color: var(--text-2); }
+.sb-nav-item.sub.active { color: var(--accent); }
+
+.sb-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border-radius: 20px;
+  padding: 1px 6px;
+  font-variant-numeric: tabular-nums;
+  min-width: 20px;
+  text-align: center;
+}
+.sb-nav-item.active .sb-count { background: rgba(0,122,255,0.12); color: var(--accent); }
+
+.sb-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 12px;
+}
+
+.sb-footer {
+  margin-top: auto;
+  padding: 14px 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
 .session-badge {
-  font-size: 11.5px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
-  color: var(--text-2);
-  background: var(--surface);
-  border: 1px solid var(--border-2);
-  border-radius: 6px;
-  padding: 3px 9px;
-  box-shadow: var(--shadow-sm);
+  color: var(--text-3);
 }
-.session-badge.warn { color: var(--partial); border-color: var(--partial-b); }
+.session-badge.warn { color: var(--partial); }
 
 .logout-btn {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--accent);
   background: transparent;
   border: none;
   cursor: pointer;
   font-family: inherit;
-  padding: 4px 2px;
   transition: opacity 0.12s;
+  padding: 0;
 }
 .logout-btn:hover { opacity: 0.7; }
 
-/* ── MAC WINDOW ─────────────────────────────────────── */
-.mac-window {
-  margin: 20px 24px 48px;
-  background: var(--surface);
-  border-radius: 14px;
-  border: 1px solid var(--border-2);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
+/* ── MAIN CONTENT ────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 60px;
 }
 
+/* Mac titlebar */
 .mac-titlebar {
   display: flex;
   align-items: center;
-  padding: 10px 14px;
-  background: #F7F7F9;
-  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  background: rgba(247,247,249,0.75);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset;
   gap: 8px;
   user-select: none;
 }
 
-.mac-dots { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.mac-dots { display: flex; gap: 6px; align-items: center; }
 
 .mac-window-title {
   flex: 1;
@@ -265,108 +399,178 @@ body {
   font-size: 12.5px;
   font-weight: 600;
   color: var(--text-2);
-  letter-spacing: -0.01em;
-  margin-right: 54px; /* offset for dots width */
+  margin-right: 60px;
 }
 
-/* ── WIDGETS ─────────────────────────────────────────── */
-.widgets-row {
+/* Panel heading */
+.panel-heading {
+  padding: 20px 20px 0;
+}
+
+.panel-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+
+.panel-link-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.panel-link {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: opacity 0.12s;
+}
+.panel-link:hover { opacity: 0.75; }
+.panel-link-sep { font-size: 12px; color: var(--text-3); }
+
+/* Stats row */
+.stats-row {
   display: flex;
   align-items: stretch;
+  gap: 0;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border);
 }
 
-.widget {
+.stat-widget {
   flex: 1;
-  padding: 16px 20px;
-  border-right: 1px solid var(--border);
+  padding: 12px 14px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  margin-right: 10px;
   position: relative;
+  overflow: hidden;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
 }
-.widget:last-child { border-right: none; }
+.stat-widget:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.9) inset;
+}
+.stat-widget:last-child { margin-right: 0; }
+.stat-widget::before {
+  content:'';
+  position:absolute;
+  top:0; left:-60%;
+  width:40%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  pointer-events:none;
+  animation: shimmer 4s ease infinite;
+  opacity:0;
+  transition: opacity 0.3s;
+}
+.stat-widget:hover::before { opacity: 1; }
 
-.widget-accent {
+.sw-accent {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2.5px;
-  border-radius: 0 0 2px 2px;
+  height: 2px;
 }
-.wa-live    { background: var(--live); }
-.wa-partial { background: var(--partial); }
-.wa-pending { background: var(--pending); }
-.wa-blocked { background: var(--blocked); }
+.sw-live    { background: var(--live); }
+.sw-partial { background: var(--partial); }
+.sw-pending { background: var(--pending); }
+.sw-blocked { background: var(--blocked); }
 
-.widget-num {
-  font-size: 28px;
+.sw-num {
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
-  margin-top: 2px;
+  margin-top: 4px;
 }
-.wn-live    { color: var(--live); }
-.wn-partial { color: var(--partial); }
-.wn-pending { color: var(--pending); }
-.wn-blocked { color: var(--blocked); }
+.sn-live    { color: var(--live); }
+.sn-partial { color: var(--partial); }
+.sn-pending { color: var(--pending); }
+.sn-blocked { color: var(--blocked); }
 
-.widget-lbl {
-  font-size: 11px;
+.sw-lbl {
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3);
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
-.widget-progress {
-  flex: 2;
-  padding: 16px 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
+/* Panel progress */
+.panel-progress {
+  padding: 14px 20px 16px;
+  border-bottom: 1px solid var(--border);
 }
 
-.wp-top {
+.pp-top {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-.wp-pct {
-  font-size: 22px;
+.pp-pct {
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   color: var(--text-1);
+  letter-spacing: -0.01em;
 }
 
-.wp-sub {
+.pp-sub {
   font-size: 12px;
   color: var(--text-3);
 }
 
-.progress-track {
-  height: 6px;
-  background: var(--surface-2);
-  border-radius: 6px;
+.pp-track {
+  height: 5px;
+  background: var(--surface-3);
+  border-radius: 5px;
   overflow: hidden;
-  border: 1px solid var(--border);
 }
 
-.progress-fill {
+.pp-fill {
   height: 100%;
-  background: var(--live);
-  border-radius: 6px;
-  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  border-radius: 5px;
+  transition: width 0.65s cubic-bezier(0.34,1.12,0.64,1);
+  position: relative;
+  overflow: hidden;
 }
+.pp-fill::after {
+  content:'';
+  position:absolute;
+  top:0; left:-60%;
+  width:40%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  animation: shimmer 2s ease 0.7s;
+}
+.ppf-user  { background: linear-gradient(90deg, var(--accent), #34AADC); }
+.ppf-admin { background: linear-gradient(90deg, #AF52DE, #DA8FFF); }
+.ppf-road  { background: linear-gradient(90deg, var(--pending), #AEAEB2); }
 
-/* ── TOOLBAR ─────────────────────────────────────────── */
+/* Toolbar */
 .toolbar {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  position: sticky;
+  top: 50px;
+  z-index: 10;
 }
 
 .search-input {
@@ -381,11 +585,7 @@ body {
   font-family: inherit;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.search-input:focus {
-  border-color: rgba(0,122,255,0.4);
-  box-shadow: 0 0 0 3px rgba(0,122,255,0.09);
-  background: var(--surface);
-}
+.search-input:focus { border-color: rgba(0,122,255,0.4); box-shadow: 0 0 0 3px rgba(0,122,255,0.09); background: var(--surface); }
 .search-input::placeholder { color: var(--text-3); }
 
 .filter-select {
@@ -399,12 +599,6 @@ body {
   cursor: pointer;
   font-family: inherit;
   transition: border-color 0.13s;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23AEAEB2' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 9px center;
-  padding-right: 26px;
 }
 .filter-select:focus { border-color: rgba(0,122,255,0.4); }
 
@@ -420,14 +614,11 @@ body {
   white-space: nowrap;
   font-family: inherit;
   transition: background 0.12s, transform 0.08s;
-  letter-spacing: -0.01em;
 }
 .add-btn:hover { background: var(--accent-d); }
 .add-btn:active { transform: scale(0.97); }
 
-/* ── SECTIONS ─────────────────────────────────────────── */
-.sections { padding: 0; }
-
+/* Sections */
 .section { border-bottom: 1px solid var(--border); }
 .section:last-child { border-bottom: none; }
 
@@ -435,7 +626,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: #FAFAFC;
   border-bottom: 1px solid var(--border);
 }
@@ -458,7 +649,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* ── TABLE ────────────────────────────────────────────── */
+/* Table */
 .table-wrap { overflow-x: auto; }
 
 table { width: 100%; border-collapse: collapse; }
@@ -474,32 +665,22 @@ thead th {
   white-space: nowrap;
   background: var(--surface);
 }
-.th-actions { text-align: right; }
-.th-date    { text-align: right; }
+.th-actions, .th-date { text-align: right; }
 
-tbody tr {
-  border-top: 1px solid var(--border);
-  transition: background 0.09s;
-}
-tbody tr:hover { background: #F9F9FC; }
+tbody tr { border-top: 1px solid var(--border); transition: background 0.15s ease, transform 0.15s cubic-bezier(0.34,1.56,0.64,1); }
+tbody tr:hover { background: rgba(255,255,255,0.75); transform: translateX(1px); }
+tbody tr.row-anim { animation: rowIn 0.25s cubic-bezier(0.34,1.12,0.64,1) both; }
 
 td { padding: 10px 14px; vertical-align: middle; }
 
-.task-name { font-size: 14px; font-weight: 500; color: var(--text-1); letter-spacing: -0.008em; }
+.task-name { font-size: 13.5px; font-weight: 500; color: var(--text-1); }
 .task-note { font-size: 12px; color: var(--text-3); margin-top: 2px; }
 
-.td-status   { white-space: nowrap; }
-.td-priority { white-space: nowrap; }
-.td-date {
-  font-size: 12px;
-  color: var(--text-3);
-  text-align: right;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-.td-actions  { text-align: right; white-space: nowrap; }
+.td-status, .td-priority { white-space: nowrap; }
+.td-date   { font-size: 12px; color: var(--text-3); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.td-actions { text-align: right; white-space: nowrap; }
 
-/* ── BADGES ───────────────────────────────────────────── */
+/* Badges */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -507,29 +688,25 @@ td { padding: 10px 14px; vertical-align: middle; }
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 3px 8px;
-  border-radius: 5px;
+  border-radius: 6px;
   white-space: nowrap;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
-.badge.clickable { cursor: pointer; user-select: none; transition: opacity 0.1s, transform 0.07s; }
-.badge.clickable:hover { opacity: 0.78; transform: scale(0.97); }
+.badge.clickable { cursor: pointer; user-select: none; transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), opacity 0.12s ease; }
+.badge.clickable:hover { opacity: 0.85; transform: scale(0.96); }
+.badge.clickable:active { animation: badgePop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
 
 .badge-live    { color: var(--live);    background: var(--live-bg);    border: 1px solid var(--live-b); }
 .badge-partial { color: var(--partial); background: var(--partial-bg); border: 1px solid var(--partial-b); }
 .badge-pending { color: var(--pending); background: var(--pending-bg); border: 1px solid var(--pending-b); }
 .badge-blocked { color: var(--blocked); background: var(--blocked-bg); border: 1px solid var(--blocked-b); }
 
-.pri-badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
+.pri-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 4px; }
 .pri-high { color: #FF3B30; background: rgba(255,59,48,0.08); }
 .pri-med  { color: #FF9F0A; background: rgba(255,159,10,0.08); }
 .pri-low  { color: var(--text-3); background: var(--surface-2); }
 
-/* ── ACTION BUTTONS ───────────────────────────────────── */
 .action-btn {
   font-size: 11.5px;
   font-weight: 500;
@@ -544,37 +721,38 @@ td { padding: 10px 14px; vertical-align: middle; }
   color: var(--text-2);
 }
 .action-btn:hover { background: var(--surface-2); }
-.edit-btn:hover   { color: var(--accent); border-color: rgba(0,122,255,0.3); }
-.del-btn:hover    { color: var(--blocked); border-color: rgba(255,59,48,0.3); }
+.edit-btn:hover { color: var(--accent); border-color: rgba(0,122,255,0.3); }
+.del-btn:hover  { color: var(--blocked); border-color: rgba(255,59,48,0.3); }
 
-.empty {
-  padding: 48px 0;
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-3);
-}
+.empty { padding: 40px 0; text-align: center; font-size: 13px; color: var(--text-3); }
 
 /* ── MODAL ────────────────────────────────────────────── */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.28);
   z-index: 100;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: 24px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  padding: 0 24px 24px;
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  animation: fadeUp 0.2s ease;
 }
+.modal-overlay.is-open { display: flex; }
 
 .modal-card {
-  background: var(--surface);
-  border-radius: 16px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
   width: 100%;
   max-width: 480px;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), 0 1px 0 rgba(255,255,255,0.9) inset;
   overflow: hidden;
+  animation: scaleIn 0.28s cubic-bezier(0.34,1.12,0.64,1);
 }
 
 .modal-chrome {
@@ -582,8 +760,10 @@ td { padding: 10px 14px; vertical-align: middle; }
   align-items: center;
   gap: 7px;
   padding: 10px 14px;
-  background: #F6F6F8;
-  border-bottom: 1px solid var(--border);
+  background: rgba(246,246,248,0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.6);
 }
 
 .modal-chrome-title {
@@ -595,20 +775,11 @@ td { padding: 10px 14px; vertical-align: middle; }
   margin-right: 54px;
 }
 
-.modal-body { padding: 22px 24px 24px; }
+.modal-body { padding: 20px 22px; }
 
 .form-field { margin-bottom: 14px; }
-.form-field label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-2);
-  margin-bottom: 5px;
-}
+.form-field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); margin-bottom: 5px; }
 .optional { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-3); margin-left: 3px; }
-
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .form-field input,
@@ -624,8 +795,7 @@ td { padding: 10px 14px; vertical-align: middle; }
   font-family: inherit;
   transition: border-color 0.14s, box-shadow 0.14s;
 }
-.form-field input:focus,
-.form-field select:focus {
+.form-field input:focus, .form-field select:focus {
   border-color: rgba(0,122,255,0.4);
   box-shadow: 0 0 0 3px rgba(0,122,255,0.09);
   background: var(--surface);
@@ -635,7 +805,7 @@ td { padding: 10px 14px; vertical-align: middle; }
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  padding: 14px 24px 20px;
+  padding: 14px 22px 20px;
   border-top: 1px solid var(--border);
 }
 
@@ -663,19 +833,16 @@ td { padding: 10px 14px; vertical-align: middle; }
   color: #fff;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.12s, transform 0.08s;
+  transition: background 0.12s;
 }
 .btn-save:hover { background: var(--accent-d); }
-.btn-save:active { transform: scale(0.97); }
 
 /* ── RESPONSIVE ───────────────────────────────────────── */
-@media (max-width: 640px) {
-  .mac-window   { margin: 12px 12px 32px; }
-  .widgets-row  { flex-wrap: wrap; }
-  .widget       { flex: 1 0 40%; border-right: none; border-bottom: 1px solid var(--border); }
-  .widget-progress { flex: 1 0 100%; border-top: 1px solid var(--border); }
-  .app-header   { padding: 0 14px; }
-  .form-row     { grid-template-columns: 1fr; }
+@media (max-width: 720px) {
+  .sidebar { display: none; }
+  .stats-row { flex-wrap: wrap; gap: 8px; padding: 12px; }
+  .stat-widget { flex: 1 0 40%; margin-right: 0; }
+  .form-row { grid-template-columns: 1fr; }
   .th-priority,.td-priority,.th-date,.td-date { display: none; }
 }
 </style>
@@ -706,86 +873,151 @@ td { padding: 10px 14px; vertical-align: middle; }
 <div id="app">
 
   <header class="app-header">
-    <div class="hdr-left">
-      <span class="hdr-logo">TRAP</span>
-      <span class="hdr-title">Build Tracker</span>
-    </div>
-    <div class="hdr-right">
-      <span id="session-timer" class="session-badge"></span>
-      <button class="logout-btn" onclick="doLogout()">Sign out</button>
-    </div>
+    <span class="hdr-logo">TRAP</span>
+    <span class="hdr-title">Build Tracker</span>
   </header>
 
-  <div class="mac-window">
+  <div class="app-layout">
 
-    <!-- Mac window chrome -->
-    <div class="mac-titlebar">
-      <div class="mac-dots">
-        <span class="mac-dot r"></span>
-        <span class="mac-dot y"></span>
-        <span class="mac-dot g"></span>
-      </div>
-      <span class="mac-window-title">TRAP Intel — Feature Progress</span>
-    </div>
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
 
-    <!-- Widgets -->
-    <div class="widgets-row">
-      <div class="widget">
-        <div class="widget-accent wa-live"></div>
-        <div class="widget-num wn-live" id="stat-live">0</div>
-        <div class="widget-lbl">Live</div>
-      </div>
-      <div class="widget">
-        <div class="widget-accent wa-partial"></div>
-        <div class="widget-num wn-partial" id="stat-partial">0</div>
-        <div class="widget-lbl">Partial</div>
-      </div>
-      <div class="widget">
-        <div class="widget-accent wa-pending"></div>
-        <div class="widget-num wn-pending" id="stat-pending">0</div>
-        <div class="widget-lbl">Pending</div>
-      </div>
-      <div class="widget">
-        <div class="widget-accent wa-blocked"></div>
-        <div class="widget-num wn-blocked" id="stat-blocked">0</div>
-        <div class="widget-lbl">Blocked</div>
-      </div>
-      <div class="widget-progress">
-        <div class="wp-top">
-          <span class="wp-pct" id="pct-text">0%</span>
-          <span class="wp-sub" id="pct-sub">features live</span>
+      <div class="sb-section">
+        <div class="sb-panel-header">
+          <span class="sb-panel-label">User Panel</span>
+          <a href="https://trap-intel-admin.vercel.app" target="_blank" class="sb-panel-link" title="Open User Panel">↗</a>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        <div class="sb-panel-url">trap-intel-admin.vercel.app</div>
+        <nav class="sb-nav">
+          <a class="sb-nav-item active" data-view="user" onclick="setView('user')">
+            <span>All Features</span>
+            <span class="sb-count" id="cnt-user">0</span>
+          </a>
+          <a class="sb-nav-item sub" data-view="user-intel" onclick="setView('user-intel')">
+            <span>Intelligence Modules</span>
+            <span class="sb-count" id="cnt-intel">0</span>
+          </a>
+          <a class="sb-nav-item sub" data-view="user-platform" onclick="setView('user-platform')">
+            <span>Platform Features</span>
+            <span class="sb-count" id="cnt-platform">0</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="sb-divider"></div>
+
+      <div class="sb-section">
+        <div class="sb-panel-header">
+          <span class="sb-panel-label">Admin Panel</span>
+          <a href="https://nexus-ctrl-admin.vercel.app" target="_blank" class="sb-panel-link" title="Open Admin Panel">↗</a>
+        </div>
+        <div class="sb-panel-url">nexus-ctrl-admin.vercel.app</div>
+        <nav class="sb-nav">
+          <a class="sb-nav-item" data-view="admin" onclick="setView('admin')">
+            <span>All Features</span>
+            <span class="sb-count" id="cnt-admin">0</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="sb-divider"></div>
+
+      <div class="sb-section">
+        <div class="sb-panel-header">
+          <span class="sb-panel-label">Roadmap</span>
+        </div>
+        <nav class="sb-nav">
+          <a class="sb-nav-item" data-view="roadmap" onclick="setView('roadmap')">
+            <span>Pending / Blocked</span>
+            <span class="sb-count" id="cnt-roadmap">0</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="sb-footer">
+        <span id="session-timer" class="session-badge"></span>
+        <button class="logout-btn" onclick="doLogout()">Sign out</button>
+      </div>
+
+    </aside>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="main-content">
+
+      <!-- Mac titlebar -->
+      <div class="mac-titlebar">
+        <div class="mac-dots">
+          <span class="mac-dot r"></span>
+          <span class="mac-dot y"></span>
+          <span class="mac-dot g"></span>
+        </div>
+        <span class="mac-window-title" id="panel-title">User Panel — All Features</span>
+      </div>
+
+      <!-- Panel heading with link -->
+      <div class="panel-heading" id="panel-heading-wrap">
+        <div class="panel-name" id="panel-name-text">User Panel</div>
+        <div class="panel-link-row" id="panel-link-row">
+          <a href="https://trap-intel-admin.vercel.app" target="_blank" class="panel-link" id="panel-link-url">
+            trap-intel-admin.vercel.app ↗
+          </a>
         </div>
       </div>
-    </div>
 
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <input type="text" class="search-input" id="search-input" placeholder="Search features..." oninput="renderSections()" />
-      <select class="filter-select" id="filter-cat" onchange="renderSections()">
-        <option value="">All categories</option>
-        <option value="intel">Intelligence</option>
-        <option value="platform">Platform</option>
-        <option value="admin">Admin Panel</option>
-        <option value="roadmap">Roadmap</option>
-      </select>
-      <select class="filter-select" id="filter-status" onchange="renderSections()">
-        <option value="">All statuses</option>
-        <option value="live">Live</option>
-        <option value="partial">Partial</option>
-        <option value="pending">Pending</option>
-        <option value="blocked">Blocked</option>
-      </select>
-      <button class="add-btn" onclick="openModal()">+ Add Feature</button>
-    </div>
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-widget">
+          <div class="sw-accent sw-live"></div>
+          <div class="sw-num sn-live" id="stat-live">0</div>
+          <div class="sw-lbl">Live</div>
+        </div>
+        <div class="stat-widget">
+          <div class="sw-accent sw-partial"></div>
+          <div class="sw-num sn-partial" id="stat-partial">0</div>
+          <div class="sw-lbl">Partial</div>
+        </div>
+        <div class="stat-widget">
+          <div class="sw-accent sw-pending"></div>
+          <div class="sw-num sn-pending" id="stat-pending">0</div>
+          <div class="sw-lbl">Pending</div>
+        </div>
+        <div class="stat-widget">
+          <div class="sw-accent sw-blocked"></div>
+          <div class="sw-num sn-blocked" id="stat-blocked">0</div>
+          <div class="sw-lbl">Blocked</div>
+        </div>
+      </div>
 
-    <!-- Sections -->
-    <div class="sections" id="sections-container"></div>
+      <!-- Panel progress bar -->
+      <div class="panel-progress">
+        <div class="pp-top">
+          <span class="pp-pct" id="panel-pct">0%</span>
+          <span class="pp-sub" id="panel-sub">0 of 0 features live</span>
+        </div>
+        <div class="pp-track">
+          <div class="pp-fill ppf-user" id="panel-fill" style="width:0%"></div>
+        </div>
+      </div>
 
-  </div><!-- /mac-window -->
-</div><!-- /app -->
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <input type="text" class="search-input" id="search-input" placeholder="Search features..." oninput="renderSections()" />
+        <select class="filter-select" id="filter-status" onchange="renderSections()">
+          <option value="">All statuses</option>
+          <option value="live">Live</option>
+          <option value="partial">Partial</option>
+          <option value="pending">Pending</option>
+          <option value="blocked">Blocked</option>
+        </select>
+        <button class="add-btn" onclick="openModal()">+ Add Feature</button>
+      </div>
+
+      <!-- Sections -->
+      <div id="sections-container"></div>
+
+    </main>
+  </div>
+</div>
 
 <!-- ── MODAL ── -->
 <div id="modal-overlay" class="modal-overlay" onclick="closeModalOutside(event)">
@@ -799,7 +1031,7 @@ td { padding: 10px 14px; vertical-align: middle; }
     <div class="modal-body">
       <div class="form-field">
         <label>Feature name</label>
-        <input type="text" id="f-name" placeholder="e.g. Wallet Tracer" />
+        <input type="text" id="f-name" placeholder="e.g. API Token Manager" />
       </div>
       <div class="form-field">
         <label>Notes <span class="optional">optional</span></label>
@@ -852,6 +1084,7 @@ const ACCESS_CODE = 'TRAP2026';
 const SESSION_MS  = 24 * 60 * 60 * 1000;
 
 const SEED = [
+  // ── Intelligence Modules
   {id:'1',  name:'IP Intelligence',              note:'IPQS fraud score, LeakOSINT breach data, dark web hits',          cat:'intel',    status:'live',    priority:'high',   date:'Aug 6'},
   {id:'2',  name:'Wallet Tracer',                note:'BTC + ETH live; BSC & Chain Abuse pending API keys',               cat:'intel',    status:'partial', priority:'high',   date:'Aug 9'},
   {id:'3',  name:'Username Intelligence',        note:'Platform lookup, dark web forum posts, stealer logs',              cat:'intel',    status:'live',    priority:'high',   date:'Aug 20'},
@@ -860,6 +1093,7 @@ const SEED = [
   {id:'6',  name:'Onion Intelligence',           note:'23-module Tor scanner, screenshots, circuit animation',            cat:'intel',    status:'live',    priority:'high',   date:'Aug 18'},
   {id:'7',  name:'Dark Handle Intelligence',     note:'Global ES search, forum presence & PII, threat actor pivot',      cat:'intel',    status:'live',    priority:'medium', date:'Aug 24'},
   {id:'8',  name:'Threat Actor Profiles',        note:'3-tier resolution, actor database, forum presence card',           cat:'intel',    status:'live',    priority:'medium', date:'Aug 15'},
+  // ── Platform Features
   {id:'9',  name:'Dashboard & Stats',            note:'Live metrics, activity feed, summary cards',                       cat:'platform', status:'live',    priority:'medium', date:'Aug 3'},
   {id:'10', name:'Compromised Credentials',      note:'Stealer log search, breach database lookup',                       cat:'platform', status:'live',    priority:'high',   date:'Aug 3'},
   {id:'11', name:'Government Watch',             note:'Regulatory monitoring, govt-linked entity tracking',               cat:'platform', status:'live',    priority:'medium', date:'Aug 3'},
@@ -868,19 +1102,31 @@ const SEED = [
   {id:'14', name:'Discovery / Entity Palette',   note:'8-vector routing, scan queue, multi-URL sequential scanning',     cat:'platform', status:'live',    priority:'high',   date:'Aug 19'},
   {id:'15', name:'Seizure Watchdog',             note:'FBI / Europol / NCA detection, red/amber banner, graph node',     cat:'platform', status:'live',    priority:'medium', date:'Aug 19'},
   {id:'16', name:'Investigation Inspector',      note:'Card layout, expand + hit table, 335k ES live pagination',        cat:'platform', status:'live',    priority:'high',   date:'Aug 22'},
-  {id:'17', name:'Authentication & User Access', note:'JWT auth, Brevo email, role-based admin login',                   cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
-  {id:'18', name:'Build Progress Tracker',       note:'Feature status board, access code gate, 24hr session',            cat:'admin',    status:'live',    priority:'low',    date:'Aug 25'},
-  {id:'19', name:'API Token Manager',            note:'Hot-reload API tokens from admin panel without service restart',  cat:'admin',    status:'pending', priority:'high',   date:''},
-  {id:'20', name:'User Management Interface',    note:'Create, edit, deactivate user accounts and assign roles',         cat:'admin',    status:'pending', priority:'medium', date:''},
+  // ── Admin Panel
+  {id:'17', name:'Authentication & User Access', note:'JWT auth, Brevo email notifications, role-based login',           cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
+  {id:'18', name:'Build Progress Tracker',       note:'Feature status board, access code gate, 24hr auto-session',       cat:'admin',    status:'live',    priority:'low',    date:'Aug 25'},
+  {id:'19', name:'API Token Manager',            note:'Hot-reload API tokens from admin without service restart',         cat:'admin',    status:'pending', priority:'high',   date:''},
+  {id:'20', name:'User Management',              note:'Create, edit, deactivate user accounts and assign roles',         cat:'admin',    status:'pending', priority:'medium', date:''},
   {id:'21', name:'Analytics & Usage Reports',    note:'Query stats, API call volumes, per-user usage breakdown',         cat:'admin',    status:'pending', priority:'medium', date:''},
   {id:'22', name:'Audit Log Viewer',             note:'Full audit trail: logins, searches, exports, role changes',       cat:'admin',    status:'pending', priority:'low',    date:''},
-  {id:'23', name:'BSC Wallet Chain',             note:'Waiting on BscScan API key',                                       cat:'roadmap',  status:'pending', priority:'medium', date:''},
-  {id:'24', name:'Chain Abuse Integration',      note:'Waiting on Breadcrumbs credit top-up',                            cat:'roadmap',  status:'pending', priority:'low',    date:''},
-  {id:'25', name:'Credentials Tab (LeakSights)', note:'API key expired Aug 15 — renewal needed',                         cat:'roadmap',  status:'blocked', priority:'high',   date:''},
-  {id:'26', name:'Per-hit Profile Enrichment',   note:'Auto-enrich each result with full profile data',                  cat:'roadmap',  status:'pending', priority:'low',    date:''},
+  {id:'23', name:'System Health Monitor',        note:'Service status, API latency, error rates across all modules',     cat:'admin',    status:'pending', priority:'medium', date:''},
+  {id:'24', name:'Feature Flag Controls',        note:'Enable/disable features per user or globally from admin',         cat:'admin',    status:'pending', priority:'low',    date:''},
+  // ── Roadmap
+  {id:'25', name:'BSC Wallet Chain',             note:'Waiting on BscScan API key',                                       cat:'roadmap',  status:'pending', priority:'medium', date:''},
+  {id:'26', name:'Chain Abuse Integration',      note:'Waiting on Breadcrumbs credit top-up',                            cat:'roadmap',  status:'pending', priority:'low',    date:''},
+  {id:'27', name:'Credentials Tab (LeakSights)', note:'API key expired Aug 15 — renewal needed',                         cat:'roadmap',  status:'blocked', priority:'high',   date:''},
+  {id:'28', name:'Per-hit Profile Enrichment',   note:'Auto-enrich each result with full profile data',                  cat:'roadmap',  status:'pending', priority:'low',    date:''},
 ];
 
-const SECTIONS = [
+const VIEW_CONFIG = {
+  'user':          {cats:['intel','platform'], title:'User Panel — All Features',         panelName:'User Panel',  link:'https://trap-intel-admin.vercel.app',     linkText:'trap-intel-admin.vercel.app', fill:'ppf-user'},
+  'user-intel':    {cats:['intel'],            title:'User Panel — Intelligence Modules', panelName:'User Panel',  link:'https://trap-intel-admin.vercel.app',     linkText:'trap-intel-admin.vercel.app', fill:'ppf-user'},
+  'user-platform': {cats:['platform'],         title:'User Panel — Platform Features',   panelName:'User Panel',  link:'https://trap-intel-admin.vercel.app',     linkText:'trap-intel-admin.vercel.app', fill:'ppf-user'},
+  'admin':         {cats:['admin'],            title:'Admin Panel — All Features',        panelName:'Admin Panel', link:'https://nexus-ctrl-admin.vercel.app',     linkText:'nexus-ctrl-admin.vercel.app', fill:'ppf-admin'},
+  'roadmap':       {cats:['roadmap'],          title:'Roadmap — Pending & Blocked',       panelName:'Roadmap',     link:'',                                        linkText:'',                            fill:'ppf-road'},
+};
+
+const SECTIONS_CONFIG = [
   {key:'intel',    label:'Intelligence Modules'},
   {key:'platform', label:'Platform Features'},
   {key:'admin',    label:'Admin Panel'},
@@ -893,10 +1139,11 @@ const STATUS_CYCLE = {live:'partial', partial:'pending', pending:'blocked', bloc
 const PRI_LBL      = {high:'HIGH', medium:'MED', low:'LOW'};
 const PRI_CLS      = {high:'pri-high', medium:'pri-med', low:'pri-low'};
 
+let currentView = 'user';
+
 /* ── AUTH ── */
 function checkAuth() {
-  try { const s = JSON.parse(localStorage.getItem('trap_session')||'{}'); return s.expiry && Date.now() < s.expiry; }
-  catch { return false; }
+  try { const s = JSON.parse(localStorage.getItem('trap_session')||'{}'); return s.expiry && Date.now() < s.expiry; } catch { return false; }
 }
 function doLogin() {
   const val = (document.getElementById('code-input').value||'').trim();
@@ -940,6 +1187,30 @@ function updateTimer() {
   } catch {}
 }
 
+/* ── VIEW ── */
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.sb-nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.view === v);
+  });
+  const cfg = VIEW_CONFIG[v] || VIEW_CONFIG['user'];
+  document.getElementById('panel-title').textContent    = cfg.title;
+  document.getElementById('panel-name-text').textContent = cfg.panelName;
+  const linkEl = document.getElementById('panel-link-url');
+  const linkRow = document.getElementById('panel-link-row');
+  if (cfg.link) {
+    linkEl.href = cfg.link;
+    linkEl.textContent = cfg.linkText + ' ↗';
+    linkRow.style.display = 'flex';
+  } else {
+    linkRow.style.display = 'none';
+  }
+  const fillEl = document.getElementById('panel-fill');
+  fillEl.className = 'pp-fill ' + cfg.fill;
+  renderSections();
+  updateStats();
+}
+
 /* ── TASKS ── */
 function getTasks() {
   try { const r = localStorage.getItem('trap_tasks'); if (r) return JSON.parse(r); } catch {}
@@ -950,9 +1221,9 @@ function putTasks(t) { localStorage.setItem('trap_tasks', JSON.stringify(t)); }
 function cycleStatus(id) {
   const tasks = getTasks();
   const t = tasks.find(x=>x.id===id);
-  if (t) { t.status = STATUS_CYCLE[t.status]||'live'; putTasks(tasks); renderSections(); updateStats(); }
+  if (t) { t.status = STATUS_CYCLE[t.status]||'live'; putTasks(tasks); renderSections(); updateStats(); updateSidebarCounts(); }
 }
-function deleteTask(id) { putTasks(getTasks().filter(t=>t.id!==id)); renderSections(); updateStats(); }
+function deleteTask(id) { putTasks(getTasks().filter(t=>t.id!==id)); renderSections(); updateStats(); updateSidebarCounts(); }
 
 /* ── MODAL ── */
 let editId = null;
@@ -961,16 +1232,23 @@ function openModal(id) {
   const t = id ? getTasks().find(x=>x.id===id) : null;
   document.getElementById('modal-title-text').textContent = t ? 'Edit Feature' : 'Add Feature';
   document.getElementById('modal-save-btn').textContent   = t ? 'Save Changes' : 'Add Feature';
-  document.getElementById('f-name').value     = t ? t.name     : '';
-  document.getElementById('f-note').value     = t ? t.note     : '';
-  document.getElementById('f-cat').value      = t ? t.cat      : 'intel';
-  document.getElementById('f-status').value   = t ? t.status   : 'pending';
+  document.getElementById('f-name').value     = t ? t.name : '';
+  document.getElementById('f-note').value     = t ? t.note||'' : '';
+  document.getElementById('f-cat').value      = t ? t.cat  : (VIEW_CONFIG[currentView]?.cats[0] || 'intel');
+  document.getElementById('f-status').value   = t ? t.status : 'pending';
   document.getElementById('f-priority').value = t ? t.priority : 'medium';
-  document.getElementById('f-date').value     = t ? t.date     : '';
-  document.getElementById('modal-overlay').style.display = 'flex';
+  document.getElementById('f-date').value     = t ? t.date||'' : '';
+  const ov = document.getElementById('modal-overlay');
+  ov.style.display = 'flex';
+  ov.classList.add('is-open');
   setTimeout(() => document.getElementById('f-name').focus(), 40);
 }
-function closeModal() { document.getElementById('modal-overlay').style.display='none'; editId=null; }
+function closeModal() {
+  const ov = document.getElementById('modal-overlay');
+  ov.style.display = 'none';
+  ov.classList.remove('is-open');
+  editId = null;
+}
 function closeModalOutside(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
 function saveTask() {
   const name = (document.getElementById('f-name').value||'').trim();
@@ -983,7 +1261,7 @@ function saveTask() {
   };
   if (editId) { const t=tasks.find(x=>x.id===editId); if(t) Object.assign(t,data); }
   else tasks.push({id:Date.now().toString(),...data});
-  putTasks(tasks); closeModal(); renderSections(); updateStats();
+  putTasks(tasks); closeModal(); renderSections(); updateStats(); updateSidebarCounts();
 }
 
 /* ── RENDER ── */
@@ -991,11 +1269,11 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 
 function getFiltered() {
   const q   = (document.getElementById('search-input')?.value||'').toLowerCase();
-  const cat = document.getElementById('filter-cat')?.value||'';
   const st  = document.getElementById('filter-status')?.value||'';
+  const cats = (VIEW_CONFIG[currentView]?.cats) || [];
   return getTasks().filter(t => {
-    if (cat && t.cat!==cat) return false;
-    if (st  && t.status!==st) return false;
+    if (cats.length && !cats.includes(t.cat)) return false;
+    if (st && t.status !== st) return false;
     if (q && !t.name.toLowerCase().includes(q) && !(t.note||'').toLowerCase().includes(q)) return false;
     return true;
   });
@@ -1005,56 +1283,89 @@ function renderSections() {
   const c = document.getElementById('sections-container');
   if (!c) return;
   const tasks = getFiltered();
-  c.innerHTML = SECTIONS.map(sec => {
-    const items = tasks.filter(t=>t.cat===sec.key);
-    if (!items.length) return '';
-    return `<div class="section">
-      <div class="section-header">
-        <span class="section-title">${esc(sec.label)}</span>
-        <span class="section-count">${items.length}</span>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr>
-          <th class="th-name">Feature</th>
-          <th class="th-status">Status</th>
-          <th class="th-priority">Priority</th>
-          <th class="th-date">Date</th>
-          <th class="th-actions"></th>
-        </tr></thead>
-        <tbody>${items.map(t=>`<tr>
-          <td><div class="task-name">${esc(t.name)}</div>${t.note?`<div class="task-note">${esc(t.note)}</div>`:''}</td>
-          <td class="td-status"><span class="badge ${STATUS_CLS[t.status]} clickable" onclick="cycleStatus('${t.id}')" title="Click to cycle status">${STATUS_LBL[t.status]}</span></td>
-          <td class="td-priority"><span class="pri-badge ${PRI_CLS[t.priority]}">${PRI_LBL[t.priority]}</span></td>
-          <td class="td-date">${t.date?esc(t.date):'—'}</td>
-          <td class="td-actions">
-            <button class="action-btn edit-btn" onclick="openModal('${t.id}')">Edit</button>
-            <button class="action-btn del-btn"  onclick="if(confirm('Remove this feature?'))deleteTask('${t.id}')">Del</button>
-          </td>
-        </tr>`).join('')}</tbody>
-      </table></div>
-    </div>`;
-  }).join('') || '<div class="empty">No features match the current filter.</div>';
+  const activeCats = (VIEW_CONFIG[currentView]?.cats) || [];
+  c.innerHTML = SECTIONS_CONFIG
+    .filter(s => !activeCats.length || activeCats.includes(s.key))
+    .map(sec => {
+      const items = tasks.filter(t=>t.cat===sec.key);
+      if (!items.length) return '';
+      return `<div class="section" style="animation:fadeUp 0.3s cubic-bezier(0.34,1.12,0.64,1) both">
+        <div class="section-header">
+          <span class="section-title">${esc(sec.label)}</span>
+          <span class="section-count">${items.length}</span>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Feature</th>
+            <th>Status</th>
+            <th class="th-priority">Priority</th>
+            <th class="th-date">Date</th>
+            <th class="th-actions"></th>
+          </tr></thead>
+          <tbody>${items.map((t,i)=>`<tr class="row-anim" style="animation-delay:${i*28}ms">
+            <td><div class="task-name">${esc(t.name)}</div>${t.note?`<div class="task-note">${esc(t.note)}</div>`:''}</td>
+            <td class="td-status"><span class="badge ${STATUS_CLS[t.status]} clickable" onclick="cycleStatus('${t.id}')" title="Click to cycle status">${STATUS_LBL[t.status]}</span></td>
+            <td class="td-priority"><span class="pri-badge ${PRI_CLS[t.priority]}">${PRI_LBL[t.priority]}</span></td>
+            <td class="td-date">${t.date?esc(t.date):'—'}</td>
+            <td class="td-actions">
+              <button class="action-btn edit-btn" onclick="openModal('${t.id}')">Edit</button>
+              <button class="action-btn del-btn"  onclick="if(confirm('Remove this feature?'))deleteTask('${t.id}')">Del</button>
+            </td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>`;
+    }).join('') || '<div class="empty" style="animation:fadeUp 0.3s ease both">No features match the current filter.</div>';
+}
+
+function animCount(el, target) {
+  const start = parseInt(el.textContent)||0;
+  if (start === target) return;
+  const dur = 380, fps = 60, steps = Math.ceil(dur/1000*fps);
+  let i = 0;
+  const tick = () => {
+    i++;
+    const progress = 1 - Math.pow(1 - i/steps, 3);
+    el.textContent = Math.round(start + (target-start) * progress);
+    el.style.animation = 'countUp 0.25s ease both';
+    if (i < steps) requestAnimationFrame(tick);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(tick);
 }
 
 function updateStats() {
-  const tasks = getTasks();
+  const allTasks = getTasks();
+  const cats = (VIEW_CONFIG[currentView]?.cats) || [];
+  const panel = cats.length ? allTasks.filter(t=>cats.includes(t.cat)) : allTasks;
   const c = {live:0,partial:0,pending:0,blocked:0};
-  tasks.forEach(t => { c[t.status]=(c[t.status]||0)+1; });
-  const total = tasks.length;
-  const pct   = total ? Math.round((c.live/total)*100) : 0;
-  document.getElementById('stat-live').textContent    = c.live;
-  document.getElementById('stat-partial').textContent = c.partial;
-  document.getElementById('stat-pending').textContent = c.pending;
-  document.getElementById('stat-blocked').textContent = c.blocked;
-  document.getElementById('pct-text').textContent     = pct+'%';
-  document.getElementById('pct-sub').textContent      = `${c.live} of ${total} features live`;
-  document.getElementById('progress-fill').style.width = pct+'%';
+  panel.forEach(t => { c[t.status]=(c[t.status]||0)+1; });
+  const total = panel.length;
+  const pct = total ? Math.round((c.live/total)*100) : 0;
+  animCount(document.getElementById('stat-live'),    c.live);
+  animCount(document.getElementById('stat-partial'), c.partial);
+  animCount(document.getElementById('stat-pending'), c.pending);
+  animCount(document.getElementById('stat-blocked'), c.blocked);
+  document.getElementById('panel-pct').textContent  = pct + '%';
+  document.getElementById('panel-sub').textContent  = `${c.live} of ${total} features live`;
+  document.getElementById('panel-fill').style.width = pct + '%';
+}
+
+function updateSidebarCounts() {
+  const tasks = getTasks();
+  const cnt = cat => tasks.filter(t=>t.cat===cat).length;
+  document.getElementById('cnt-user').textContent     = cnt('intel') + cnt('platform');
+  document.getElementById('cnt-intel').textContent    = cnt('intel');
+  document.getElementById('cnt-platform').textContent = cnt('platform');
+  document.getElementById('cnt-admin').textContent    = cnt('admin');
+  document.getElementById('cnt-roadmap').textContent  = cnt('roadmap');
 }
 
 /* ── INIT ── */
 function initApp() {
   if (!localStorage.getItem('trap_tasks')) putTasks(SEED.map(t=>({...t})));
-  renderSections(); updateStats(); updateTimer();
+  setView('user');
+  updateSidebarCounts();
+  updateTimer();
   clearInterval(timerRef);
   timerRef = setInterval(updateTimer, 30000);
 }
