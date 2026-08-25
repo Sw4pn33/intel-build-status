@@ -649,44 +649,84 @@ body {
   top: calc(100% + 7px);
   right: 0;
   min-width: 175px;
-  /* iOS 26 frosted glass — proper */
-  background: rgba(248,248,252,0.97);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 0.5px solid rgba(255,255,255,0.85);
+
+  /* Real liquid glass — very low tint, SVG filter + blur do the optical work */
+  background: rgba(255, 255, 255, 0.08);
+
+  /* Fallback: frosted blur — Safari / Firefox */
+  -webkit-backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
+          backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
+  /* Real refraction — Chromium only (last valid declaration wins there) */
+          backdrop-filter: blur(3px) url(#lg-filter) saturate(1.35) brightness(1.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.68);
   border-radius: 16px;
+
+  /* 4-directional glass rim + drop shadow */
   box-shadow:
-    0 24px 60px rgba(0,0,0,0.14),
-    0 8px 24px rgba(0,0,0,0.07),
-    0 0 0 0.5px rgba(0,0,0,0.05),
-    0 1px 0 rgba(255,255,255,1) inset;
+    inset  0     1.5px 1px   rgba(255,255,255,0.92),
+    inset  0    -2px   1.5px rgba(255,255,255,0.58),
+    inset  2px   0     1.5px rgba(255,255,255,0.48),
+    inset -2px   0     1.5px rgba(255,255,255,0.48),
+    inset  0     0     10px  rgba(255,255,255,0.12),
+    0 18px 44px rgba(0,0,0,0.16),
+    0  4px 12px rgba(0,0,0,0.08),
+    0  0   0  0.5px rgba(0,0,0,0.055);
+
   overflow: hidden;
+  isolation: isolate;
   z-index: 40;
-  transform-origin: top right;
-  transform: scale(0.88) translateY(-10px);
+
+  /* Clip-path collapse/reveal — matches Apple's spring pop */
   opacity: 0;
-  pointer-events: none;
-  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease;
+  visibility: hidden;
+  clip-path: inset(0 30% 86% 30% round 16px);
+  transition:
+    opacity    0.11s cubic-bezier(0.4,0,1,1),
+    clip-path  0.11s cubic-bezier(0.4,0,1,1),
+    visibility 0s linear 0.11s;
 }
-/* Iridescent top sheen — iOS 26 signature */
+
+/* Legibility scrim — subtle gradient so text stays sharp over any background */
 .cs-panel::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
-    rgba(255,255,255,0),
-    rgba(255,255,255,0.95) 30%,
-    rgba(210,230,255,0.8) 60%,
-    rgba(255,255,255,0.6) 80%,
-    rgba(255,255,255,0));
+  inset: 0;
+  border-radius: inherit;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
+  background: linear-gradient(
+    108deg,
+    rgba(255,255,255,0.28) 0%,
+    rgba(255,255,255,0.06) 55%,
+    rgba(220,235,255,0.08) 100%
+  );
 }
+
+/* Chromatic aberration — iridescent edge fringe via screen blend */
+.cs-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+  box-shadow:
+    inset  1px 0 4px rgba(255, 80, 110, 0.30),
+    inset -1px 0 4px rgba(50, 220, 255, 0.26),
+    inset 0  1px rgba(255,255,255,0.55),
+    inset 0 -20px 30px rgba(255,255,255,0.07);
+}
+
 .cs-wrap.open .cs-panel {
-  transform: scale(1) translateY(0);
   opacity: 1;
+  visibility: visible;
+  clip-path: inset(0 0 0 0 round 16px);
   pointer-events: all;
+  transition:
+    opacity   0.2s cubic-bezier(0.16,1,0.3,1),
+    clip-path 0.2s cubic-bezier(0.16,1,0.3,1);
 }
 
 .cs-option {
@@ -696,25 +736,28 @@ body {
   padding: 10px 16px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-1);
+  color: #1C1C1E;
   cursor: pointer;
-  transition: background 0.14s ease;
+  transition: background 0.12s ease;
   user-select: none;
   letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.5);
 }
 .cs-option + .cs-option {
-  border-top: 0.5px solid rgba(0,0,0,0.06);
+  border-top: 0.5px solid rgba(0,0,0,0.055);
 }
 .cs-option:hover {
-  background: rgba(0,122,255,0.08);
+  background: rgba(255,255,255,0.55);
 }
 .cs-option:active {
-  background: rgba(0,122,255,0.14);
+  background: rgba(255,255,255,0.72);
 }
 .cs-option.active {
-  color: var(--accent);
+  color: #007AFF;
   font-weight: 600;
-  background: rgba(0,122,255,0.07);
+  background: rgba(0,122,255,0.09);
 }
 .cs-check {
   margin-left: auto;
@@ -1557,6 +1600,51 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.cs-wrap.open').forEach(d => d.classList.remove('open'));
 });
 
+/* ── LIQUID GLASS SVG FILTER ── */
+function injectLiquidGlassFilter() {
+  if (document.getElementById('lg-filter')) return;
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.style.cssText = 'position:absolute;pointer-events:none;overflow:hidden;width:0;height:0';
+  const defs = document.createElementNS(ns, 'defs');
+  const filter = document.createElementNS(ns, 'filter');
+  filter.setAttribute('id', 'lg-filter');
+  filter.setAttribute('x', '0'); filter.setAttribute('y', '0');
+  filter.setAttribute('width', '100%'); filter.setAttribute('height', '100%');
+  filter.setAttribute('color-interpolation-filters', 'sRGB');
+  // Turbulence noise
+  const turb = document.createElementNS(ns, 'feTurbulence');
+  turb.setAttribute('type', 'fractalNoise');
+  turb.setAttribute('baseFrequency', '0.009 0.006');
+  turb.setAttribute('numOctaves', '3');
+  turb.setAttribute('seed', '7');
+  turb.setAttribute('result', 'noise');
+  // Animate only if motion is OK
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const anim = document.createElementNS(ns, 'animate');
+    anim.setAttribute('attributeName', 'baseFrequency');
+    anim.setAttribute('values', '0.009 0.006;0.013 0.009;0.009 0.006');
+    anim.setAttribute('dur', '8s');
+    anim.setAttribute('repeatCount', 'indefinite');
+    turb.appendChild(anim);
+  }
+  // Slight blur on noise for softer warp
+  const blur = document.createElementNS(ns, 'feGaussianBlur');
+  blur.setAttribute('in', 'noise'); blur.setAttribute('stdDeviation', '1.8');
+  blur.setAttribute('result', 'blurred');
+  // Displacement map — keeps scale low to avoid artifacts on light backgrounds
+  const disp = document.createElementNS(ns, 'feDisplacementMap');
+  disp.setAttribute('in', 'SourceGraphic'); disp.setAttribute('in2', 'blurred');
+  disp.setAttribute('scale', '18');
+  disp.setAttribute('xChannelSelector', 'R'); disp.setAttribute('yChannelSelector', 'G');
+  filter.append(turb, blur, disp);
+  defs.appendChild(filter);
+  svg.appendChild(defs);
+  document.body.appendChild(svg);
+}
+
 /* ── INIT ── */
 function initApp() {
   if (localStorage.getItem('trap_seed_version') !== SEED_VERSION) {
@@ -1571,6 +1659,7 @@ function initApp() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  injectLiquidGlassFilter();
   document.getElementById('code-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
   if (checkAuth()) showApp();
