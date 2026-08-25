@@ -646,23 +646,21 @@ body {
   overflow: hidden;
   z-index: 40;
 
-  /* Shimmer sweep + light frosted base (Z1Code pattern, light-adapted) */
+  /* Solid opaque base — no background bleed, shimmer on top */
   background:
-    linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%),
-    linear-gradient(140deg, rgba(255,255,255,0.88), rgba(242,242,250,0.82));
+    linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%),
+    linear-gradient(140deg, rgba(252,252,255,0.98), rgba(244,244,252,0.97));
   background-size: 200% 100%, 100% 100%;
-  animation: glass-shimmer 7s ease-in-out infinite;
+  animation: glass-shimmer 5s ease-in-out infinite;
 
-  -webkit-backdrop-filter: blur(26px) saturate(1.7) brightness(1.04);
-          backdrop-filter: blur(26px) saturate(1.7) brightness(1.04);
-  /* Chromium: SVG refraction on top */
-          backdrop-filter: blur(20px) url(#glass-refract) saturate(1.5) brightness(1.04);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.05);
+          backdrop-filter: blur(40px) saturate(1.8) brightness(1.05);
 
   box-shadow:
-    0 0 0 0.5px rgba(0,0,0,0.07),
-    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 0 0 0.5px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,1),
     0 4px 24px -4px rgba(0,0,0,0.14),
-    0 12px 40px -8px rgba(0,0,0,0.08);
+    0 16px 48px -8px rgba(0,0,0,0.10);
 
   /* Spring clip-path reveal */
   opacity: 0;
@@ -674,7 +672,7 @@ body {
     visibility 0s   linear 0.11s;
 }
 
-/* Specular highlight — top-edge line + overhead glow (Z1Code exact pattern) */
+/* Specular highlight — top-edge line + overhead glow */
 .cs-panel::before {
   content: '';
   position: absolute;
@@ -683,15 +681,19 @@ body {
   pointer-events: none;
   z-index: 3;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.38) 0%, transparent 40%),
-    linear-gradient(90deg, transparent 8%, rgba(255,255,255,0.90) 50%, transparent 92%);
-  background-size: 100% 100%, 100% 1px;
-  background-position: 0 0, 0 0;
+    /* top-left corner caustic */
+    radial-gradient(24% 20% at 8% 4%, rgba(255,255,255,0.82) 0%, transparent 70%),
+    /* top-right glint */
+    radial-gradient(18% 16% at 92% 4%, rgba(255,255,255,0.55) 0%, transparent 70%),
+    /* top-edge specular line */
+    linear-gradient(90deg, transparent 6%, rgba(255,255,255,0.92) 50%, transparent 94%);
+  background-size: 100% 100%, 100% 100%, 100% 1px;
+  background-position: 0 0, 0 0, 0 0;
   background-repeat: no-repeat;
-  animation: specular-breathe 5s ease-in-out infinite;
+  animation: specular-breathe 4s ease-in-out infinite;
 }
 
-/* Prismatic chromatic dispersion (Z1Code exact pattern, light-bg tuned) */
+/* Prismatic chromatic dispersion — more visible on light bg */
 .cs-panel::after {
   content: '';
   position: absolute;
@@ -700,15 +702,15 @@ body {
   pointer-events: none;
   z-index: 2;
   background:
-    radial-gradient(ellipse 55% 50% at 12% 50%, rgba(0,140,255,0.04) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 55% at 50% 12%, rgba(100,60,255,0.03) 0%, transparent 70%),
-    radial-gradient(ellipse 55% 50% at 88% 50%, rgba(255,80,180,0.025) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 55% at 50% 88%, rgba(80,200,150,0.02) 0%, transparent 70%);
+    radial-gradient(ellipse 60% 40% at 0% 50%,   rgba(0,120,255,0.09) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 0%,    rgba(120,60,255,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 50%,  rgba(255,60,160,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 100%,  rgba(60,200,140,0.05) 0%, transparent 70%);
   box-shadow:
-    inset  1px  0 0 0 rgba(0,140,255,0.07),
-    inset -1px  0 0 0 rgba(255,80,180,0.07),
-    inset  0  1px 0 0 rgba(80,200,150,0.05),
-    inset  0 -1px 0 0 rgba(255,190,50,0.05);
+    inset  1.5px 0 0 0 rgba(0,120,255,0.10),
+    inset -1.5px 0 0 0 rgba(255,60,160,0.10),
+    inset  0  1px 0 0 rgba(120,60,255,0.07),
+    inset  0 -1px 0 0 rgba(60,200,140,0.07);
 }
 
 .cs-wrap.open .cs-panel {
