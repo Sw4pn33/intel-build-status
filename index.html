@@ -62,14 +62,14 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); border-radius: 3px; }
 
 /* ── LIQUID GLASS + ANIMATIONS ──────────────────────────── */
-@keyframes fadeUp   { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-@keyframes scaleIn  { from { opacity:0; transform:scale(0.94) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
-@keyframes badgePop { 0%{transform:scale(1)} 40%{transform:scale(0.88)} 70%{transform:scale(1.07)} 100%{transform:scale(1)} }
-@keyframes countUp  { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-@keyframes shimmer  {
-  0%   { transform:translateX(-100%) skewX(-15deg); }
-  100% { transform:translateX(220%) skewX(-15deg); }
-}
+@keyframes fadeUp        { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scaleIn       { from { opacity:0; transform:scale(0.94) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+@keyframes badgePop      { 0%{transform:scale(1)} 40%{transform:scale(0.88)} 70%{transform:scale(1.07)} 100%{transform:scale(1)} }
+@keyframes countUp       { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+@keyframes shimmer       { 0%{transform:translateX(-100%) skewX(-15deg);} 100%{transform:translateX(220%) skewX(-15deg);} }
+/* Z1Code/glass-refraction keyframes */
+@keyframes glass-shimmer    { 0%{background-position:-200% 0,0 0;} 100%{background-position:200% 0,0 0;} }
+@keyframes specular-breathe { 0%,100%{opacity:0.55;} 50%{opacity:1;} }
 @keyframes rowIn {
   from { opacity:0; transform:translateX(-4px); }
   to   { opacity:1; transform:translateX(0); }
@@ -592,49 +592,40 @@ body {
 .cs-wrap { position: relative; flex-shrink: 0; }
 
 .cs-trigger {
+  /* glass-pill from Z1Code/glass-refraction — light bg adaptation */
   display: flex;
   align-items: center;
   gap: 6px;
-  /* iOS 26 liquid glass pill */
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(60px) saturate(250%) brightness(110%);
-  -webkit-backdrop-filter: blur(60px) saturate(250%) brightness(110%);
-  border: 0.5px solid rgba(255,255,255,0.82);
-  border-radius: 10px;
-  padding: 7px 12px;
+  position: relative;
+  isolation: isolate;
+  border-radius: 9999px;
+  padding: 7px 14px;
   font-size: 12.5px;
   font-weight: 500;
   color: var(--text-2);
   cursor: pointer;
   font-family: inherit;
-  box-shadow:
-    0 2px 12px rgba(0,0,0,0.07),
-    0 1px 0 rgba(255,255,255,0.95) inset,
-    0 -0.5px 0 rgba(0,0,0,0.05) inset;
-  transition: all 0.2s cubic-bezier(0.34,1.12,0.64,1);
   white-space: nowrap;
   user-select: none;
-  position: relative;
-  overflow: hidden;
-}
-.cs-trigger::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 50%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.4), rgba(255,255,255,0));
-  border-radius: 10px 10px 0 0;
-  pointer-events: none;
+  border: none;
+  background: rgba(255,255,255,0.68);
+  -webkit-backdrop-filter: blur(8px) saturate(1.3);
+          backdrop-filter: blur(8px) saturate(1.3);
+  box-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.92),
+    0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.25s cubic-bezier(0.34,1.12,0.64,1);
 }
 .cs-trigger:hover {
-  background: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.88);
   box-shadow:
-    0 6px 20px rgba(0,0,0,0.09),
-    0 1px 0 rgba(255,255,255,1) inset,
-    0 -0.5px 0 rgba(0,0,0,0.04) inset;
+    0 0 0 0.5px rgba(0,0,0,0.09),
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 4px 16px rgba(0,0,0,0.09);
   transform: translateY(-1px);
 }
-.cs-trigger:active { transform: scale(0.97) translateY(0); }
+.cs-trigger:active { transform: scale(0.97); }
 
 .cs-chevron {
   width: 11px; height: 11px;
@@ -645,78 +636,79 @@ body {
 .cs-wrap.open .cs-chevron { transform: rotate(180deg); opacity: 0.7; }
 
 .cs-panel {
+  /* glass-card from Z1Code/glass-refraction — light bg adaptation */
   position: absolute;
   top: calc(100% + 7px);
   right: 0;
-  min-width: 175px;
-
-  /* Real liquid glass — very low tint, SVG filter + blur do the optical work */
-  background: rgba(255, 255, 255, 0.08);
-
-  /* Fallback: frosted blur — Safari / Firefox */
-  -webkit-backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
-          backdrop-filter: blur(14px) saturate(1.9) brightness(1.06);
-  /* Real refraction — Chromium only (last valid declaration wins there) */
-          backdrop-filter: blur(3px) url(#lg-filter) saturate(1.35) brightness(1.04);
-
-  border: 1px solid rgba(255, 255, 255, 0.68);
-  border-radius: 16px;
-
-  /* 4-directional glass rim + drop shadow */
-  box-shadow:
-    inset  0     1.5px 1px   rgba(255,255,255,0.92),
-    inset  0    -2px   1.5px rgba(255,255,255,0.58),
-    inset  2px   0     1.5px rgba(255,255,255,0.48),
-    inset -2px   0     1.5px rgba(255,255,255,0.48),
-    inset  0     0     10px  rgba(255,255,255,0.12),
-    0 18px 44px rgba(0,0,0,0.16),
-    0  4px 12px rgba(0,0,0,0.08),
-    0  0   0  0.5px rgba(0,0,0,0.055);
-
-  overflow: hidden;
+  min-width: 178px;
   isolation: isolate;
+  border-radius: 16px;
+  overflow: hidden;
   z-index: 40;
 
-  /* Clip-path collapse/reveal — matches Apple's spring pop */
+  /* Shimmer sweep + light frosted base (Z1Code pattern, light-adapted) */
+  background:
+    linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%),
+    linear-gradient(140deg, rgba(255,255,255,0.88), rgba(242,242,250,0.82));
+  background-size: 200% 100%, 100% 100%;
+  animation: glass-shimmer 7s ease-in-out infinite;
+
+  -webkit-backdrop-filter: blur(26px) saturate(1.7) brightness(1.04);
+          backdrop-filter: blur(26px) saturate(1.7) brightness(1.04);
+  /* Chromium: SVG refraction on top */
+          backdrop-filter: blur(20px) url(#glass-refract) saturate(1.5) brightness(1.04);
+
+  box-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 4px 24px -4px rgba(0,0,0,0.14),
+    0 12px 40px -8px rgba(0,0,0,0.08);
+
+  /* Spring clip-path reveal */
   opacity: 0;
   visibility: hidden;
-  clip-path: inset(0 30% 86% 30% round 16px);
+  clip-path: inset(0 32% 88% 32% round 16px);
   transition:
     opacity    0.11s cubic-bezier(0.4,0,1,1),
     clip-path  0.11s cubic-bezier(0.4,0,1,1),
-    visibility 0s linear 0.11s;
+    visibility 0s   linear 0.11s;
 }
 
-/* Legibility scrim — subtle gradient so text stays sharp over any background */
+/* Specular highlight — top-edge line + overhead glow (Z1Code exact pattern) */
 .cs-panel::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 0;
-  background: linear-gradient(
-    108deg,
-    rgba(255,255,255,0.28) 0%,
-    rgba(255,255,255,0.06) 55%,
-    rgba(220,235,255,0.08) 100%
-  );
+  z-index: 3;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.38) 0%, transparent 40%),
+    linear-gradient(90deg, transparent 8%, rgba(255,255,255,0.90) 50%, transparent 92%);
+  background-size: 100% 100%, 100% 1px;
+  background-position: 0 0, 0 0;
+  background-repeat: no-repeat;
+  animation: specular-breathe 5s ease-in-out infinite;
 }
 
-/* Chromatic aberration — iridescent edge fringe via screen blend */
+/* Prismatic chromatic dispersion (Z1Code exact pattern, light-bg tuned) */
 .cs-panel::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 3;
-  mix-blend-mode: screen;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse 55% 50% at 12% 50%, rgba(0,140,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 55% at 50% 12%, rgba(100,60,255,0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 50% at 88% 50%, rgba(255,80,180,0.025) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 55% at 50% 88%, rgba(80,200,150,0.02) 0%, transparent 70%);
   box-shadow:
-    inset  1px 0 4px rgba(255, 80, 110, 0.30),
-    inset -1px 0 4px rgba(50, 220, 255, 0.26),
-    inset 0  1px rgba(255,255,255,0.55),
-    inset 0 -20px 30px rgba(255,255,255,0.07);
+    inset  1px  0 0 0 rgba(0,140,255,0.07),
+    inset -1px  0 0 0 rgba(255,80,180,0.07),
+    inset  0  1px 0 0 rgba(80,200,150,0.05),
+    inset  0 -1px 0 0 rgba(255,190,50,0.05);
 }
 
 .cs-wrap.open .cs-panel {
@@ -725,8 +717,8 @@ body {
   clip-path: inset(0 0 0 0 round 16px);
   pointer-events: all;
   transition:
-    opacity   0.2s cubic-bezier(0.16,1,0.3,1),
-    clip-path 0.2s cubic-bezier(0.16,1,0.3,1);
+    opacity   0.22s cubic-bezier(0.16,1,0.3,1),
+    clip-path 0.22s cubic-bezier(0.16,1,0.3,1);
 }
 
 .cs-option {
@@ -1600,47 +1592,55 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.cs-wrap.open').forEach(d => d.classList.remove('open'));
 });
 
-/* ── LIQUID GLASS SVG FILTER ── */
+/* ── LIQUID GLASS SVG FILTER (Z1Code/glass-refraction exact structure) ── */
 function injectLiquidGlassFilter() {
-  if (document.getElementById('lg-filter')) return;
+  if (document.getElementById('glass-refract')) return;
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
   svg.setAttribute('aria-hidden', 'true');
-  svg.style.cssText = 'position:absolute;pointer-events:none;overflow:hidden;width:0;height:0';
+  svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
   const defs = document.createElementNS(ns, 'defs');
-  const filter = document.createElementNS(ns, 'filter');
-  filter.setAttribute('id', 'lg-filter');
-  filter.setAttribute('x', '0'); filter.setAttribute('y', '0');
-  filter.setAttribute('width', '100%'); filter.setAttribute('height', '100%');
-  filter.setAttribute('color-interpolation-filters', 'sRGB');
-  // Turbulence noise
+
+  // Filter: preblur → turbulence → smooth → displace → saturate
+  // Exact structure from Z1Code/glass-refraction examples/vanilla/index.html
+  const f = document.createElementNS(ns, 'filter');
+  f.setAttribute('id', 'glass-refract');
+  f.setAttribute('x', '-5%'); f.setAttribute('y', '-5%');
+  f.setAttribute('width', '110%'); f.setAttribute('height', '110%');
+  f.setAttribute('color-interpolation-filters', 'sRGB');
+
+  const preblur = document.createElementNS(ns, 'feGaussianBlur');
+  preblur.setAttribute('in', 'SourceGraphic');
+  preblur.setAttribute('stdDeviation', '0.3');
+  preblur.setAttribute('result', 'preblur');
+
   const turb = document.createElementNS(ns, 'feTurbulence');
   turb.setAttribute('type', 'fractalNoise');
-  turb.setAttribute('baseFrequency', '0.009 0.006');
-  turb.setAttribute('numOctaves', '3');
-  turb.setAttribute('seed', '7');
+  turb.setAttribute('baseFrequency', '0.015 0.012');
+  turb.setAttribute('numOctaves', '2');
+  turb.setAttribute('seed', '42');
   turb.setAttribute('result', 'noise');
-  // Animate only if motion is OK
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const anim = document.createElementNS(ns, 'animate');
-    anim.setAttribute('attributeName', 'baseFrequency');
-    anim.setAttribute('values', '0.009 0.006;0.013 0.009;0.009 0.006');
-    anim.setAttribute('dur', '8s');
-    anim.setAttribute('repeatCount', 'indefinite');
-    turb.appendChild(anim);
-  }
-  // Slight blur on noise for softer warp
-  const blur = document.createElementNS(ns, 'feGaussianBlur');
-  blur.setAttribute('in', 'noise'); blur.setAttribute('stdDeviation', '1.8');
-  blur.setAttribute('result', 'blurred');
-  // Displacement map — keeps scale low to avoid artifacts on light backgrounds
+
+  const smooth = document.createElementNS(ns, 'feGaussianBlur');
+  smooth.setAttribute('in', 'noise');
+  smooth.setAttribute('stdDeviation', '3');
+  smooth.setAttribute('result', 'smooth');
+
   const disp = document.createElementNS(ns, 'feDisplacementMap');
-  disp.setAttribute('in', 'SourceGraphic'); disp.setAttribute('in2', 'blurred');
-  disp.setAttribute('scale', '18');
-  disp.setAttribute('xChannelSelector', 'R'); disp.setAttribute('yChannelSelector', 'G');
-  filter.append(turb, blur, disp);
-  defs.appendChild(filter);
+  disp.setAttribute('in', 'preblur');
+  disp.setAttribute('in2', 'smooth');
+  disp.setAttribute('scale', '8');
+  disp.setAttribute('xChannelSelector', 'R');
+  disp.setAttribute('yChannelSelector', 'G');
+  disp.setAttribute('result', 'displaced');
+
+  const sat = document.createElementNS(ns, 'feColorMatrix');
+  sat.setAttribute('in', 'displaced');
+  sat.setAttribute('type', 'saturate');
+  sat.setAttribute('values', '1.3');
+
+  f.append(preblur, turb, smooth, disp, sat);
+  defs.appendChild(f);
   svg.appendChild(defs);
   document.body.appendChild(svg);
 }
