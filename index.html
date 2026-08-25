@@ -903,16 +903,59 @@ td { padding: 10px 14px; vertical-align: middle; }
 .modal-overlay.is-open { display: flex; }
 
 .modal-card {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
+  /* Z1Code glass-card on modal — same pattern as .cs-panel */
+  position: relative;
+  isolation: isolate;
   border-radius: 20px;
   width: 100%;
   max-width: 480px;
-  box-shadow: var(--shadow-xl), 0 1px 0 rgba(255,255,255,0.9) inset;
   overflow: hidden;
   animation: scaleIn 0.28s cubic-bezier(0.34,1.12,0.64,1);
+
+  background:
+    linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.30) 50%, transparent 60%),
+    linear-gradient(140deg, rgba(252,252,255,0.97), rgba(244,244,252,0.96));
+  background-size: 200% 100%, 100% 100%;
+  animation: scaleIn 0.28s cubic-bezier(0.34,1.12,0.64,1), glass-shimmer 6s ease-in-out 0.3s infinite;
+
+  -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.04);
+          backdrop-filter: blur(40px) saturate(1.8) brightness(1.04);
+
+  box-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.07),
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 8px 40px rgba(0,0,0,0.18),
+    0 24px 64px rgba(0,0,0,0.10);
+}
+
+/* Modal top-edge specular */
+.modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95) 50%, transparent);
+  pointer-events: none;
+  z-index: 10;
+  animation: specular-breathe 4s ease-in-out infinite;
+}
+
+/* Modal chromatic edge dispersion */
+.modal-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 50% 30% at 0% 50%,  rgba(0,120,255,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 100% 50%, rgba(255,60,160,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 20% at 50% 0%,   rgba(100,60,255,0.04) 0%, transparent 70%);
+  box-shadow:
+    inset  1.5px 0 0 0 rgba(0,120,255,0.06),
+    inset -1.5px 0 0 0 rgba(255,60,160,0.06),
+    inset  0  1px 0 0 rgba(100,60,255,0.05);
 }
 
 .modal-chrome {
@@ -960,6 +1003,89 @@ td { padding: 10px 14px; vertical-align: middle; }
   box-shadow: 0 0 0 3px rgba(0,122,255,0.09);
   background: var(--surface);
 }
+
+/* ── MODAL GLASS DROPDOWNS ── */
+.mdd-wrap { position: relative; width: 100%; }
+.mdd-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%;
+  background: rgba(255,255,255,0.72);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+          backdrop-filter: blur(12px) saturate(1.4);
+  border: 0.5px solid rgba(0,0,0,0.12);
+  border-radius: 9px;
+  padding: 8px 11px;
+  font-size: 13.5px; font-weight: 400;
+  color: var(--text-1);
+  cursor: pointer; font-family: inherit;
+  box-shadow: 0 0 0 0.5px rgba(255,255,255,0.8) inset, 0 1px 3px rgba(0,0,0,0.06);
+  transition: all 0.18s ease;
+  user-select: none; position: relative; overflow: hidden;
+}
+.mdd-trigger::before {
+  content:''; position:absolute; top:0;left:0;right:0; height:50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.45), transparent);
+  pointer-events:none; border-radius: 9px 9px 0 0;
+}
+.mdd-trigger:hover { background: rgba(255,255,255,0.9); border-color: rgba(0,122,255,0.3); box-shadow: 0 0 0 3px rgba(0,122,255,0.08), 0 0 0 0.5px rgba(255,255,255,0.9) inset; }
+.mdd-wrap.open .mdd-trigger { border-color: rgba(0,122,255,0.4); box-shadow: 0 0 0 3px rgba(0,122,255,0.09), 0 0 0 0.5px rgba(255,255,255,0.9) inset; }
+.mdd-chevron { width: 11px; height: 11px; opacity: 0.4; flex-shrink: 0; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s; }
+.mdd-wrap.open .mdd-chevron { transform: rotate(180deg); opacity: 0.7; }
+
+.mdd-panel {
+  position: absolute;
+  top: calc(100% + 5px); left: 0; right: 0;
+  isolation: isolate;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 999;
+
+  background:
+    linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.28) 50%, transparent 60%),
+    linear-gradient(140deg, rgba(252,252,255,0.97), rgba(244,244,252,0.96));
+  background-size: 200% 100%, 100% 100%;
+  animation: glass-shimmer 5s ease-in-out infinite;
+
+  -webkit-backdrop-filter: blur(30px) saturate(1.7);
+          backdrop-filter: blur(30px) saturate(1.7);
+
+  box-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 8px 24px rgba(0,0,0,0.12);
+
+  opacity: 0; visibility: hidden;
+  clip-path: inset(0 20% 90% 20% round 12px);
+  transition: opacity 0.10s cubic-bezier(0.4,0,1,1), clip-path 0.10s cubic-bezier(0.4,0,1,1), visibility 0s linear 0.10s;
+}
+/* Specular line */
+.mdd-panel::before {
+  content:''; position:absolute; top:0; left:6%; right:6%; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.92) 50%, transparent);
+  pointer-events:none; z-index:3;
+}
+/* Chromatic edges */
+.mdd-panel::after {
+  content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:2;
+  box-shadow: inset 1px 0 0 0 rgba(0,120,255,0.07), inset -1px 0 0 0 rgba(255,60,160,0.07), inset 0 1px 0 0 rgba(100,60,255,0.05);
+}
+.mdd-wrap.open .mdd-panel {
+  opacity:1; visibility:visible;
+  clip-path: inset(0 0 0 0 round 12px);
+  transition: opacity 0.2s cubic-bezier(0.16,1,0.3,1), clip-path 0.2s cubic-bezier(0.16,1,0.3,1);
+}
+.mdd-option {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 9px 13px; font-size: 13px; font-weight:500;
+  color: var(--text-1); cursor:pointer;
+  transition: background 0.12s; user-select:none;
+  position:relative; z-index:1;
+}
+.mdd-option + .mdd-option { border-top: 0.5px solid rgba(0,0,0,0.055); }
+.mdd-option:hover { background: rgba(255,255,255,0.6); }
+.mdd-option.active { color: var(--accent); font-weight:600; background: rgba(0,122,255,0.07); }
+.mdd-check { width:12px;height:12px; opacity:0; color:var(--accent); transition: opacity 0.15s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1); transform:scale(0.5); }
+.mdd-option.active .mdd-check { opacity:1; transform:scale(1); }
 
 .modal-actions {
   display: flex;
@@ -1222,31 +1348,52 @@ td { padding: 10px 14px; vertical-align: middle; }
       <div class="form-row">
         <div class="form-field">
           <label>Category</label>
-          <select id="f-cat">
-            <option value="intel">Intelligence Module</option>
-            <option value="platform">Platform Feature</option>
-            <option value="admin">Admin Panel</option>
-            <option value="roadmap">Roadmap / Pending</option>
-          </select>
+          <div class="mdd-wrap" id="mdd-cat">
+            <button type="button" class="mdd-trigger" onclick="toggleMDD(event,'mdd-cat')">
+              <span id="mdd-cat-label">Intelligence Module</span>
+              <svg class="mdd-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg>
+            </button>
+            <div class="mdd-panel">
+              <div class="mdd-option active" data-val="intel"     onclick="pickMDD('mdd-cat','f-cat','intel','Intelligence Module')">Intelligence Module<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option" data-val="platform"  onclick="pickMDD('mdd-cat','f-cat','platform','Platform Feature')">Platform Feature<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option" data-val="admin"     onclick="pickMDD('mdd-cat','f-cat','admin','Admin Panel')">Admin Panel<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option" data-val="roadmap"   onclick="pickMDD('mdd-cat','f-cat','roadmap','Roadmap / Pending')">Roadmap / Pending<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+            </div>
+            <input type="hidden" id="f-cat" value="intel">
+          </div>
         </div>
         <div class="form-field">
           <label>Status</label>
-          <select id="f-status">
-            <option value="live">Live</option>
-            <option value="partial">Partial</option>
-            <option value="pending">Pending</option>
-            <option value="blocked">Blocked</option>
-          </select>
+          <div class="mdd-wrap" id="mdd-status">
+            <button type="button" class="mdd-trigger" onclick="toggleMDD(event,'mdd-status')">
+              <span id="mdd-status-label">Pending</span>
+              <svg class="mdd-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg>
+            </button>
+            <div class="mdd-panel">
+              <div class="mdd-option" data-val="live"     onclick="pickMDD('mdd-status','f-status','live','Live')">Live<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option" data-val="partial"  onclick="pickMDD('mdd-status','f-status','partial','Partial')">Partial<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option active" data-val="pending"  onclick="pickMDD('mdd-status','f-status','pending','Pending')">Pending<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option" data-val="blocked"  onclick="pickMDD('mdd-status','f-status','blocked','Blocked')">Blocked<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+            </div>
+            <input type="hidden" id="f-status" value="pending">
+          </div>
         </div>
       </div>
       <div class="form-row">
         <div class="form-field">
           <label>Priority</label>
-          <select id="f-priority">
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
+          <div class="mdd-wrap" id="mdd-priority">
+            <button type="button" class="mdd-trigger" onclick="toggleMDD(event,'mdd-priority')">
+              <span id="mdd-priority-label">Medium</span>
+              <svg class="mdd-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg>
+            </button>
+            <div class="mdd-panel">
+              <div class="mdd-option" data-val="high"   onclick="pickMDD('mdd-priority','f-priority','high','High')">High<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option active" data-val="medium" onclick="pickMDD('mdd-priority','f-priority','medium','Medium')">Medium<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <div class="mdd-option" data-val="low"    onclick="pickMDD('mdd-priority','f-priority','low','Low')">Low<svg class="mdd-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+            </div>
+            <input type="hidden" id="f-priority" value="medium">
+          </div>
         </div>
         <div class="form-field">
           <label>Date <span class="optional">optional</span></label>
@@ -1435,6 +1582,34 @@ function cycleStatus(id) {
 }
 function deleteTask(id) { putTasks(getTasks().filter(t=>t.id!==id)); renderSections(); updateStats(); updateSidebarCounts(); }
 
+/* ── MODAL GLASS DROPDOWNS ── */
+function toggleMDD(e, id) {
+  e.stopPropagation();
+  const el = document.getElementById(id);
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.mdd-wrap.open').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
+}
+function pickMDD(wrapId, inputId, val, label) {
+  document.getElementById(inputId).value = val;
+  const wrap = document.getElementById(wrapId);
+  wrap.querySelector('[id$="-label"]').textContent = label;
+  wrap.querySelectorAll('.mdd-option').forEach(o => o.classList.toggle('active', o.dataset.val === val));
+  wrap.classList.remove('open');
+}
+function setMDD(wrapId, inputId, val) {
+  const map = {
+    'mdd-cat':      {intel:'Intelligence Module', platform:'Platform Feature', admin:'Admin Panel', roadmap:'Roadmap / Pending'},
+    'mdd-status':   {live:'Live', partial:'Partial', pending:'Pending', blocked:'Blocked'},
+    'mdd-priority': {high:'High', medium:'Medium', low:'Low'},
+  };
+  const label = (map[wrapId]||{})[val] || val;
+  pickMDD(wrapId, inputId, val, label);
+}
+document.addEventListener('click', () => {
+  document.querySelectorAll('.mdd-wrap.open').forEach(d => d.classList.remove('open'));
+});
+
 /* ── MODAL ── */
 let editId = null;
 function openModal(id) {
@@ -1442,12 +1617,12 @@ function openModal(id) {
   const t = id ? getTasks().find(x=>x.id===id) : null;
   document.getElementById('modal-title-text').textContent = t ? 'Edit Feature' : 'Add Feature';
   document.getElementById('modal-save-btn').textContent   = t ? 'Save Changes' : 'Add Feature';
-  document.getElementById('f-name').value     = t ? t.name : '';
-  document.getElementById('f-note').value     = t ? t.note||'' : '';
-  document.getElementById('f-cat').value      = t ? t.cat  : (VIEW_CONFIG[currentView]?.cats[0] || 'intel');
-  document.getElementById('f-status').value   = t ? t.status : 'pending';
-  document.getElementById('f-priority').value = t ? t.priority : 'medium';
-  document.getElementById('f-date').value     = t ? t.date||'' : '';
+  document.getElementById('f-name').value = t ? t.name : '';
+  document.getElementById('f-note').value = t ? t.note||'' : '';
+  document.getElementById('f-date').value = t ? t.date||'' : '';
+  setMDD('mdd-cat',      'f-cat',      t ? t.cat      : (VIEW_CONFIG[currentView]?.cats[0] || 'intel'));
+  setMDD('mdd-status',   'f-status',   t ? t.status   : 'pending');
+  setMDD('mdd-priority', 'f-priority', t ? t.priority : 'medium');
   const ov = document.getElementById('modal-overlay');
   ov.style.display = 'flex';
   ov.classList.add('is-open');
