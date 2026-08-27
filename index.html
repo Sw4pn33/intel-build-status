@@ -1415,7 +1415,7 @@ td { padding: 10px 14px; vertical-align: middle; }
 <script>
 const ACCESS_CODE  = 'TRAP2026';
 const SESSION_MS   = 24 * 60 * 60 * 1000;
-const SEED_VERSION = 'v10'; // bump when SEED changes to force localStorage reset
+const SEED_VERSION = 'v11'; // bump when SEED changes to force localStorage reset
 
 const SEED = [
   // ── Intelligence Modules (PRD OSINT Vectors + Dark Web)
@@ -1469,7 +1469,7 @@ const SEED = [
   {id:'A10', name:'Dark Web Posts (ES-backed)', note:'Two tabs: All ES Posts (1M+) + Admin Published; Publish/Verify/Delete from admin; posts appear on user panel at top by timestamp', cat:'admin', status:'live', priority:'high', date:'Aug 27'},
   {id:'B1', name:'System Health Monitoring',     note:'Real metrics: CPU/RAM/disk, 4-service ping (trap-api, PostgreSQL, Flask, ES), 30s auto-refresh, overall status banner', cat:'admin', status:'live', priority:'medium', date:'Aug 27'},
   {id:'B2', name:'Audit Logs',                   note:'Real DB: 60+ events, severity/module filter, search — wired to trap_audit_logs with user join', cat:'admin', status:'live', priority:'medium', date:'Aug 27'},
-  {id:'B3', name:'Maintenance Mode',             note:'Read-only / full maintenance; custom message, allowed IPs/users',  cat:'admin', status:'pending', priority:'low',    date:''},
+  {id:'B3', name:'Maintenance Mode',             note:'Admin toggle + custom message; user panel shows full-screen blocking screen when enabled; public /maintenance-status endpoint',  cat:'admin', status:'live', priority:'low',    date:'Aug 27'},
   {id:'B4', name:'Security Settings',            note:'SSO/SAML, MFA policy, password policy, session & IP controls',    cat:'admin',  status:'pending', priority:'high',   date:''},
   {id:'B5', name:'Notifications Management',     note:'Email + in-app alerts: health, crawler fail, license expiry, security', cat:'admin', status:'pending', priority:'low', date:''},
   {id:'B6', name:'Integrations',                 note:'External service integrations; webhook config, API connectors',    cat:'admin',  status:'pending', priority:'low',    date:''},
