@@ -1415,7 +1415,7 @@ td { padding: 10px 14px; vertical-align: middle; }
 <script>
 const ACCESS_CODE  = 'TRAP2026';
 const SESSION_MS   = 24 * 60 * 60 * 1000;
-const SEED_VERSION = 'v7'; // bump when SEED changes to force localStorage reset
+const SEED_VERSION = 'v8'; // bump when SEED changes to force localStorage reset
 
 const SEED = [
   // ── Intelligence Modules (PRD OSINT Vectors + Dark Web)
@@ -1457,17 +1457,17 @@ const SEED = [
   // ── Admin Panel (PRD Section: Administration)
   {id:'17', name:'Authentication & User Access', note:'JWT auth, Brevo email, role-based login (super_admin + admin)',   cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
   {id:'18', name:'Build Progress Tracker',       note:'Persistent DB backend, API-driven CRUD, real-time sync across viewers',  cat:'admin',    status:'live',    priority:'low',    date:'Aug 27'},
-  {id:'A1', name:'Admin Dashboard',              note:'User/license/investigation/platform stats widgets, security alerts', cat:'admin', status:'pending', priority:'high',   date:''},
-  {id:'A2', name:'Registration Requests',        note:'Review & approve/reject access requests; approval email workflow', cat:'admin', status:'pending', priority:'high',   date:''},
-  {id:'A3', name:'User Management',              note:'Create/disable/delete users, reset MFA, force logout, assign roles', cat:'admin', status:'pending', priority:'high', date:''},
+  {id:'A1', name:'Admin Dashboard',              note:'Real-time stats: 4-card widget (users/orgs/audit/API keys) from live DB via /api/admin/stats', cat:'admin', status:'live', priority:'high',   date:'Aug 27'},
+  {id:'A2', name:'Registration Requests',        note:'Full CRUD: review, approve/reject with email; wired to real DB trap_registrations', cat:'admin', status:'live', priority:'high',   date:'Aug 27'},
+  {id:'A3', name:'User Management',              note:'Real DB: disable/enable/delete users, force logout, reset MFA — wired to trap_users', cat:'admin', status:'live', priority:'high', date:'Aug 27'},
   {id:'A4', name:'Roles & Permissions (RBAC)',   note:'Super Admin / Org Admin / Investigator roles; permission matrix',  cat:'admin', status:'pending', priority:'high',   date:''},
-  {id:'A5', name:'Organization Management',      note:'Multi-tenant: org profile, branding, SSO, retention, IP rules',   cat:'admin', status:'pending', priority:'medium', date:''},
-  {id:'A6', name:'License Management',           note:'Pilot/Pro/Enterprise licenses; seat count, module access, expiry', cat:'admin', status:'pending', priority:'high',   date:''},
+  {id:'A5', name:'Organization Management',      note:'Real DB: 10 orgs live, card grid + detail panel with members, create/delete — trap_orgs', cat:'admin', status:'live', priority:'medium', date:'Aug 27'},
+  {id:'A6', name:'License Management',           note:'Real DB: trap_licenses auto-provisioned, seat utilization, renewal timeline, plan matrix', cat:'admin', status:'live', priority:'high',   date:'Aug 27'},
   {id:'A7', name:'Billing Management',           note:'Invoices, payments, credits, renewals, usage charges (SaaS)',     cat:'admin',  status:'pending', priority:'medium', date:''},
-  {id:'A8', name:'API Key Management',           note:'Create/revoke/rotate API keys; rate limits, permission scoping',  cat:'admin',  status:'pending', priority:'medium', date:''},
+  {id:'A8', name:'API Key Management',           note:'Full CRUD: generate/revoke/rotate/delete; inline create modal; real trap_api_keys table', cat:'admin',  status:'live', priority:'medium', date:'Aug 27'},
   {id:'A9', name:'Data Source Management',       note:'Dark web / Telegram / surface web sources; health, sync, reindex', cat:'admin', status:'pending', priority:'medium', date:''},
   {id:'B1', name:'System Health Monitoring',     note:'CPU/mem/disk/queue/crawler/search metrics; Healthy/Warning/Critical', cat:'admin', status:'pending', priority:'medium', date:''},
-  {id:'B2', name:'Audit Logs',                   note:'Full trail: login, search, report, export, config changes; CSV/PDF', cat:'admin', status:'pending', priority:'medium', date:''},
+  {id:'B2', name:'Audit Logs',                   note:'Real DB: 60+ events, severity/module filter, search — wired to trap_audit_logs with user join', cat:'admin', status:'live', priority:'medium', date:'Aug 27'},
   {id:'B3', name:'Maintenance Mode',             note:'Read-only / full maintenance; custom message, allowed IPs/users',  cat:'admin', status:'pending', priority:'low',    date:''},
   {id:'B4', name:'Security Settings',            note:'SSO/SAML, MFA policy, password policy, session & IP controls',    cat:'admin',  status:'pending', priority:'high',   date:''},
   {id:'B5', name:'Notifications Management',     note:'Email + in-app alerts: health, crawler fail, license expiry, security', cat:'admin', status:'pending', priority:'low', date:''},
