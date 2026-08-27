@@ -1415,7 +1415,7 @@ td { padding: 10px 14px; vertical-align: middle; }
 <script>
 const ACCESS_CODE  = 'TRAP2026';
 const SESSION_MS   = 24 * 60 * 60 * 1000;
-const SEED_VERSION = 'v5'; // bump when SEED changes to force localStorage reset
+const SEED_VERSION = 'v6'; // bump when SEED changes to force localStorage reset
 
 const SEED = [
   // ── Intelligence Modules (PRD OSINT Vectors + Dark Web)
@@ -1427,7 +1427,7 @@ const SEED = [
   {id:'I05', name:'Onion Intelligence',           note:'23-module Tor scanner, screenshots, Tor circuit animation — Dark Web M2',   cat:'intel', status:'live',    priority:'high',   date:'Aug 18'},
   {id:'I06', name:'Dark Handle Intelligence',     note:'Global ES search, forum presence & PII, threat actor pivot — DW Vector',    cat:'intel', status:'live',    priority:'medium', date:'Aug 24'},
   {id:'I07', name:'Threat Actor Profiles',        note:'3-tier resolution, actor database, forum presence, wallets — DW Module',    cat:'intel', status:'live',    priority:'medium', date:'Aug 15'},
-  {id:'I08', name:'Wallet Tracer',                note:'BTC + ETH live; BSC pending BscScan key; Chain Abuse pending credits',      cat:'intel', status:'partial', priority:'high',   date:'Aug 9'},
+  {id:'I08', name:'Wallet Tracer',                note:'BTC + ETH + BSC live; ChainAbuse.com reports integrated — Crypto Vector',  cat:'intel', status:'live',    priority:'high',   date:'Aug 27'},
   // ⏳ PENDING — PRD vectors not yet built in TRAP
   {id:'I09', name:'Name / Person Intelligence',   note:'Search engines, social networks, leaks, news, documents — Vector 1',       cat:'intel', status:'pending', priority:'high',   date:''},
   {id:'I10', name:'Phone Number Intelligence',    note:'Public references, directories, social profiles, leak references — V4',    cat:'intel', status:'pending', priority:'high',   date:''},
@@ -1456,7 +1456,7 @@ const SEED = [
   {id:'P15', name:'PDF Report Export',            note:'Per-entity investigation report; threat actor dossier PDF export',         cat:'platform', status:'pending', priority:'medium', date:''},
   // ── Admin Panel (PRD Section: Administration)
   {id:'17', name:'Authentication & User Access', note:'JWT auth, Brevo email, role-based login (super_admin + admin)',   cat:'admin',    status:'live',    priority:'high',   date:'Aug 3'},
-  {id:'18', name:'Build Progress Tracker',       note:'This board — access code gate, 24hr session, CRUD features',     cat:'admin',    status:'live',    priority:'low',    date:'Aug 25'},
+  {id:'18', name:'Build Progress Tracker',       note:'Persistent DB backend, API-driven CRUD, real-time sync across viewers',  cat:'admin',    status:'live',    priority:'low',    date:'Aug 27'},
   {id:'A1', name:'Admin Dashboard',              note:'User/license/investigation/platform stats widgets, security alerts', cat:'admin', status:'pending', priority:'high',   date:''},
   {id:'A2', name:'Registration Requests',        note:'Review & approve/reject access requests; approval email workflow', cat:'admin', status:'pending', priority:'high',   date:''},
   {id:'A3', name:'User Management',              note:'Create/disable/delete users, reset MFA, force logout, assign roles', cat:'admin', status:'pending', priority:'high', date:''},
@@ -1473,8 +1473,6 @@ const SEED = [
   {id:'B5', name:'Notifications Management',     note:'Email + in-app alerts: health, crawler fail, license expiry, security', cat:'admin', status:'pending', priority:'low', date:''},
   {id:'B6', name:'Integrations',                 note:'External service integrations; webhook config, API connectors',    cat:'admin',  status:'pending', priority:'low',    date:''},
   // ── Roadmap
-  {id:'R1', name:'BSC Wallet Chain',             note:'Waiting on BscScan API key',                                       cat:'roadmap',  status:'pending', priority:'medium', date:''},
-  {id:'R2', name:'Chain Abuse Integration',      note:'Waiting on Breadcrumbs credit top-up',                            cat:'roadmap',  status:'pending', priority:'low',    date:''},
   {id:'R3', name:'Credentials Tab (LeakSights)', note:'API key expired Aug 15 — renewal needed',                         cat:'roadmap',  status:'blocked', priority:'high',   date:''},
   {id:'R4', name:'Per-hit Profile Enrichment',   note:'Auto-enrich each result with full profile data',                  cat:'roadmap',  status:'pending', priority:'low',    date:''},
 ];
@@ -1572,19 +1570,72 @@ function setView(v) {
   updateStats();
 }
 
-/* ── TASKS ── */
-function getTasks() {
-  try { const r = localStorage.getItem('trap_tasks'); if (r) return JSON.parse(r); } catch {}
-  return SEED.map(t=>({...t}));
-}
-function putTasks(t) { localStorage.setItem('trap_tasks', JSON.stringify(t)); }
+/* ── TASKS (API-backed, localStorage fallback) ── */
+let TASKS_CACHE = [];
+let apiAvailable = false;
 
-function cycleStatus(id) {
-  const tasks = getTasks();
-  const t = tasks.find(x=>x.id===id);
-  if (t) { t.status = STATUS_CYCLE[t.status]||'live'; putTasks(tasks); renderSections(); updateStats(); updateSidebarCounts(); }
+async function loadTasksFromAPI() {
+  try {
+    const r = await fetch('/api/tracker/tasks', { signal: AbortSignal.timeout(5000) });
+    if (!r.ok) throw new Error(r.status);
+    TASKS_CACHE = await r.json();
+    apiAvailable = true;
+    return true;
+  } catch {
+    return false;
+  }
 }
-function deleteTask(id) { putTasks(getTasks().filter(t=>t.id!==id)); renderSections(); updateStats(); updateSidebarCounts(); }
+
+function loadTasksFromLS() {
+  try {
+    if (localStorage.getItem('trap_seed_version') !== SEED_VERSION) {
+      const fresh = SEED.map(t=>({...t}));
+      localStorage.setItem('trap_tasks', JSON.stringify(fresh));
+      localStorage.setItem('trap_seed_version', SEED_VERSION);
+      TASKS_CACHE = fresh;
+    } else {
+      const r = localStorage.getItem('trap_tasks');
+      TASKS_CACHE = r ? JSON.parse(r) : SEED.map(t=>({...t}));
+    }
+  } catch { TASKS_CACHE = SEED.map(t=>({...t})); }
+}
+
+function saveToLS() {
+  try { localStorage.setItem('trap_tasks', JSON.stringify(TASKS_CACHE)); } catch {}
+}
+
+function getTasks() { return TASKS_CACHE; }
+
+async function apiCall(method, path, body) {
+  try {
+    const opts = { method, headers: { 'x-access-code': ACCESS_CODE, 'Content-Type': 'application/json' } };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    const r = await fetch('/api/tracker' + path, opts);
+    return r.ok ? await r.json() : null;
+  } catch { return null; }
+}
+
+async function cycleStatus(id) {
+  const t = TASKS_CACHE.find(x=>x.id===id);
+  if (!t) return;
+  t.status = STATUS_CYCLE[t.status]||'live';
+  renderSections(); updateStats(); updateSidebarCounts();
+  if (apiAvailable) {
+    await apiCall('PUT', `/tasks/${id}`, { status: t.status });
+  } else {
+    saveToLS();
+  }
+}
+
+async function deleteTask(id) {
+  TASKS_CACHE = TASKS_CACHE.filter(t=>t.id!==id);
+  renderSections(); updateStats(); updateSidebarCounts();
+  if (apiAvailable) {
+    await apiCall('DELETE', `/tasks/${id}`);
+  } else {
+    saveToLS();
+  }
+}
 
 /* ── MODAL GLASS DROPDOWNS ── */
 function toggleMDD(e, id) {
@@ -1639,18 +1690,26 @@ function closeModal() {
   editId = null;
 }
 function closeModalOutside(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
-function saveTask() {
+async function saveTask() {
   const name = (document.getElementById('f-name').value||'').trim();
   if (!name) { document.getElementById('f-name').focus(); return; }
-  const tasks = getTasks();
   const data = {
     name, note:(document.getElementById('f-note').value||'').trim(),
     cat:document.getElementById('f-cat').value, status:document.getElementById('f-status').value,
     priority:document.getElementById('f-priority').value, date:(document.getElementById('f-date').value||'').trim(),
   };
-  if (editId) { const t=tasks.find(x=>x.id===editId); if(t) Object.assign(t,data); }
-  else tasks.push({id:Date.now().toString(),...data});
-  putTasks(tasks); closeModal(); renderSections(); updateStats(); updateSidebarCounts();
+  if (editId) {
+    const t = TASKS_CACHE.find(x=>x.id===editId);
+    if(t) Object.assign(t, data);
+    if (apiAvailable) await apiCall('PUT', `/tasks/${editId}`, data);
+    else saveToLS();
+  } else {
+    const task = { id: Date.now().toString(), ...data };
+    TASKS_CACHE.push(task);
+    if (apiAvailable) await apiCall('POST', '/tasks', task);
+    else saveToLS();
+  }
+  closeModal(); renderSections(); updateStats(); updateSidebarCounts();
 }
 
 /* ── RENDER ── */
@@ -1827,11 +1886,9 @@ function injectLiquidGlassFilter() {
 }
 
 /* ── INIT ── */
-function initApp() {
-  if (localStorage.getItem('trap_seed_version') !== SEED_VERSION) {
-    putTasks(SEED.map(t=>({...t})));
-    localStorage.setItem('trap_seed_version', SEED_VERSION);
-  }
+async function initApp() {
+  const apiOk = await loadTasksFromAPI();
+  if (!apiOk) loadTasksFromLS();
   setView('user');
   updateSidebarCounts();
   updateTimer();
