@@ -1415,7 +1415,7 @@ td { padding: 10px 14px; vertical-align: middle; }
 <script>
 const ACCESS_CODE  = 'TRAP2026';
 const SESSION_MS   = 24 * 60 * 60 * 1000;
-const SEED_VERSION = 'v6'; // bump when SEED changes to force localStorage reset
+const SEED_VERSION = 'v7'; // bump when SEED changes to force localStorage reset
 
 const SEED = [
   // ── Intelligence Modules (PRD OSINT Vectors + Dark Web)
@@ -1442,7 +1442,7 @@ const SEED = [
   {id:'P02', name:'Compromised Credentials',      note:'Stealer log search, breach database lookup',                               cat:'platform', status:'live', priority:'high',   date:'Aug 3'},
   {id:'P03', name:'Government Watch',             note:'Public dark web leaks, breach claims, CERT advisories — Monitor M1',       cat:'platform', status:'live', priority:'medium', date:'Aug 3'},
   {id:'P04', name:'Surface Web Search',           note:'SearxNG, 4 pages parallel, 80–93 results per query',                      cat:'platform', status:'live', priority:'medium', date:'Aug 17'},
-  {id:'P05', name:'Investigation Graph',          note:'ReactFlow, 14 section types, edge delete, ES pagination, full parity',     cat:'platform', status:'live', priority:'high',   date:'Aug 22'},
+  {id:'P05', name:'Investigation Graph',          note:'ReactFlow, 14 node types, platform/domain favicon icons on nodes, profile detail overlay, drill panel with expand, Aug 27 enhancements',     cat:'platform', status:'live', priority:'high',   date:'Aug 27'},
   {id:'P06', name:'Discovery / Entity Palette',   note:'8-vector routing, scan queue, multi-URL sequential scanning',              cat:'platform', status:'live', priority:'high',   date:'Aug 19'},
   {id:'P07', name:'Seizure Watchdog',             note:'FBI / Europol / NCA detection, red/amber banner, graph node',              cat:'platform', status:'live', priority:'medium', date:'Aug 19'},
   {id:'P08', name:'Investigation Inspector',      note:'Card layout, [N] format, expand+hit table, 335k ES live pagination',       cat:'platform', status:'live', priority:'high',   date:'Aug 22'},
