@@ -1574,12 +1574,28 @@ function setView(v) {
 /* ── TASKS (API-backed, localStorage fallback) ── */
 let TASKS_CACHE = [];
 let apiAvailable = false;
+const API_BASE = 'https://nexus-ctrl-admin.vercel.app/api/admin';
 
 async function loadTasksFromAPI() {
   try {
-    const r = await fetch('/api/tracker/tasks', { signal: AbortSignal.timeout(5000) });
+    const r = await fetch(API_BASE + '/tracker/tasks', {
+      headers: { 'x-tracker-key': ACCESS_CODE },
+      signal: AbortSignal.timeout(8000),
+    });
     if (!r.ok) throw new Error(r.status);
-    TASKS_CACHE = await r.json();
+    const data = await r.json();
+    if (data.length === 0) {
+      // DB not seeded yet — load from localStorage/SEED then push to DB
+      loadTasksFromLS();
+      fetch(API_BASE + '/tracker/tasks/init', {
+        method: 'POST',
+        headers: { 'x-tracker-key': ACCESS_CODE, 'Content-Type': 'application/json' },
+        body: JSON.stringify(TASKS_CACHE),
+        signal: AbortSignal.timeout(10000),
+      }).catch(() => {});
+    } else {
+      TASKS_CACHE = data;
+    }
     apiAvailable = true;
     return true;
   } catch {
@@ -1609,9 +1625,9 @@ function getTasks() { return TASKS_CACHE; }
 
 async function apiCall(method, path, body) {
   try {
-    const opts = { method, headers: { 'x-access-code': ACCESS_CODE, 'Content-Type': 'application/json' } };
+    const opts = { method, headers: { 'x-tracker-key': ACCESS_CODE, 'Content-Type': 'application/json' } };
     if (body !== undefined) opts.body = JSON.stringify(body);
-    const r = await fetch('/api/tracker' + path, opts);
+    const r = await fetch(API_BASE + '/tracker' + path, opts);
     return r.ok ? await r.json() : null;
   } catch { return null; }
 }
