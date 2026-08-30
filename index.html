@@ -1415,7 +1415,7 @@ td { padding: 10px 14px; vertical-align: middle; }
 <script>
 const ACCESS_CODE  = 'TRAP2026';
 const SESSION_MS   = 24 * 60 * 60 * 1000;
-const SEED_VERSION = 'v14'; // bump when SEED changes to force localStorage reset
+const SEED_VERSION = 'v15'; // bump when SEED changes to force localStorage reset
 
 const SEED = [
   // ── Intelligence Modules (PRD OSINT Vectors + Dark Web)
@@ -1463,7 +1463,7 @@ const SEED = [
   {id:'A4', name:'Roles & Permissions (RBAC)',   note:'Super Admin / Org Admin / Investigator roles; permission matrix',  cat:'admin', status:'pending', priority:'high',   date:''},
   {id:'A5', name:'Organization Management',      note:'Real DB: 10 orgs live, card grid + detail panel with members, create/delete — trap_orgs', cat:'admin', status:'live', priority:'medium', date:'Aug 27'},
   {id:'A6', name:'License Management',           note:'Real DB: trap_licenses auto-provisioned, seat utilization, renewal timeline, plan matrix', cat:'admin', status:'live', priority:'high',   date:'Aug 27'},
-  {id:'A7', name:'Billing Management',           note:'Invoices, payments, credits, renewals, usage charges (SaaS)',     cat:'admin',  status:'pending', priority:'medium', date:''},
+  {id:'A7', name:'Billing Management',           note:'MRR/paid/pending stats, subscriptions from real orgs, invoice table, mark-paid, create invoice modal, trap_invoices table',     cat:'admin',  status:'live', priority:'medium', date:'Aug 30'},
   {id:'A8', name:'API Key Management',           note:'Full CRUD: generate/revoke/rotate/delete; inline create modal; real trap_api_keys table', cat:'admin',  status:'live', priority:'medium', date:'Aug 27'},
   {id:'A9', name:'Data Source Management',       note:'10 sources (ES, PG, IPQS, LeakOSINT, Breadcrumbs, URLScan, SearxNG, Wayback, Flask ML, Onion); health from audit_logs, enable/disable toggle, Sync All', cat:'admin', status:'live', priority:'medium', date:'Aug 29'},
   {id:'A10', name:'Dark Web Posts (ES-backed)', note:'Two tabs: All ES Posts (1M+) + Admin Published; Publish/Verify/Delete from admin; posts appear on user panel at top by timestamp', cat:'admin', status:'live', priority:'high', date:'Aug 27'},
